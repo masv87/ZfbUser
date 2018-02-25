@@ -1,0 +1,17 @@
+<?php
+/**
+ * @var string $identity - E-mail пользователя
+ */
+
+$query = http_build_query(['identity' => $identity]);
+$resendUrl = $this->url('zfbuser/confirmation', ['action' => 'resend'], ['query' => $query]);
+?>
+
+<div class="jumbotron z-depth-2">
+    <h1 class="h1-responsive">Thank you for signing up with ADS!</h1>
+
+    <p class="lead">Another confirmation email has been sent to <a href="javascript:void();"><?= $identity; ?></a>.</p>
+    <p><a href="<?= $resendUrl; ?>">Send one more</a></p>
+    <hr class="my-2">
+    <p>If none of the above helps, please contact our support team</p>
+</div>

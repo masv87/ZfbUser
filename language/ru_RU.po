@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+
+msgid "Authentication failed. Please try again."
+msgstr "Неправильный логин или пароль."
+
+msgid "A record matching the input was found"
+msgstr "Пользователь с таким E-mail адресом уже зарегистрирован"
+
+msgid "Identity is not confirmed"
+msgstr "Учетная запись не активирована"
+
+msgid "There were errors during authentication"
+msgstr "Найдены ошибки в процессе аутентификации"
+
+msgid "There were errors during registration"
+msgstr "Найдены ошибки в процессе регистрации"
+
+msgid "Value is required and can't be empty"
+msgstr "Поле обязательно для заполнения"
+
+msgid "The two given tokens do not match"
+msgstr "Пароли не совпадают"
+
+msgid "Authentication"
+msgstr "Вход"
+
+msgid "Registration"
+msgstr "Регистрация"
+
+msgid "Logout"
+msgstr "Выход"
+
+msgid "Profile"
+msgstr "Профиль"
+
+msgid "E-mail"
+msgstr "E-mail"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Password Verify"
+msgstr "Повторите пароль"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Sign in"
+msgstr "Войти"
+
+msgid "Sign up"
+msgstr "Зарегистрироваться"

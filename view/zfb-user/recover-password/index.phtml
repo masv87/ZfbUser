@@ -1,0 +1,22 @@
+<?php
+/**
+ * @var Zend\Form\Form $form
+ * @var bool           $identityNotFound - Пользователь НЕ найден?
+ */
+?>
+<h1>ZfbUser::recoverPassword</h1>
+<?php
+
+if ($identityNotFound === true) {
+    echo 'Identity not found!';
+}
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('action', $this->url('zfbuser/recover-password'));
+$form->setAttribute('method', 'POST');
+
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>

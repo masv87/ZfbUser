@@ -1,0 +1,16 @@
+<?php
+/**
+ * @var string                        $identity
+ * @var \ZfbUser\AuthenticationResult $authResult
+ */
+?>
+
+<h1>ZfbUser::confirmation</h1>
+
+<?php if ($authResult->isValid()): ?>
+    <h3>Hello, <?= $authResult->getIdentity()->getDisplayName(); ?>!</h3>
+    <h5>Учетная запись успешно активирована!</h5>
+    <a href="<?= $this->url('zfbuser/authentication'); ?>">Войти</a>
+<?php else: ?>
+    <h3>Не удалудалось активировать учетную запись</h3>
+<?php endif; ?>

@@ -1,0 +1,11 @@
+<?php
+/**
+ * @var ZfbUser\Entity\UserInterface $user
+ */
+?>
+
+<h1>ZfbUser::index</h1>
+
+<h3>Hello, <?=$user->getDisplayName(); ?>!</h3>
+
+<a href="<?=$this->url('zfbuser/logout'); ?>">Logout</a>

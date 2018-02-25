@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+
+msgid "Authentication failed. Please try again."
+msgstr ""
+
+msgid "A record matching the input was found"
+msgstr ""
+
+msgid "Identity is not confirmed"
+msgstr ""
+
+msgid "There were errors during authentication"
+msgstr ""
+
+msgid "There were errors during registration"
+msgstr ""
+
+msgid "Value is required and can't be empty"
+msgstr ""
+
+msgid "The two given tokens do not match"
+msgstr ""
+
+msgid "Authentication"
+msgstr ""
+
+msgid "Registration"
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "E-mail"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Password Verify"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "Sign up"
+msgstr ""

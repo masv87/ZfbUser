@@ -1,0 +1,28 @@
+<?php
+/**
+ * @var \Zend\Form\Form|null $form    - Форма регистрации или NULL если отключена регистрация
+ * @var boolean              $error   - произошла ошибка?
+ * @var string               $message - текст ошибки
+ */
+?>
+
+    <h1>ZfbUser::registration</h1>
+<?php
+if ($error === true) {
+    echo "<p>$message</p>";
+}
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('action', $this->url('zfbuser/registration'));
+$form->setAttribute('method', 'POST');
+
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+?>
+<?php if ($this->redirect): ?>
+    <input type="hidden" name="redirect" value="<?php echo $this->redirect ?>">
+<?php endif ?>
+<?php
+
+echo $this->form()->closeTag();

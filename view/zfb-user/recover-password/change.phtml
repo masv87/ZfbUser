@@ -1,0 +1,26 @@
+<?php
+/**
+ * @var \Zend\Form\Form               $form     - Форма восстановления пароля
+ * @var string                        $identity - На какой email отправлена ссылка для восстановления пароля
+ * @var ?\ZfbUser\AuthenticationResult $authResult
+ */
+?>
+<h1>ZfbUser::recoverPassword-change</h1>
+
+<?php if (!empty($authResult) && !$authResult->isValid()): ?>
+    <?php foreach ($authResult->getMessages() as $message): ?>
+        <?= $message; ?>
+    <?php endforeach;; ?>
+<?php else: ?>
+
+    <?php
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url('zfbuser/recover-password', ['action' => 'change']));
+    $form->setAttribute('method', 'POST');
+
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+    ?>
+<?php endif; ?>

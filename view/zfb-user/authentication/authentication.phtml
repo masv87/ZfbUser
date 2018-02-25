@@ -1,0 +1,37 @@
+<?php
+/**
+ * @var Zend\Form\Form               $form
+ * @var ZfbUser\AuthenticationResult $authResult
+ * @var bool                         $enableRegistration - Включена функция регистрации?
+ * @var bool                         $confirmed          - Авторизуемся после подтверждения аккаунта?
+ * @var bool                         $passwordChanged    - Авторизуемся после смены пароля?
+ */
+?>
+<h1>ZfbUser::authentication</h1>
+<?php
+if (isset($authResult)) {
+    if (!$authResult->isValid()) {
+        echo "Код ошибки: " . $authResult->getCode() . "<br/>";
+        foreach ($authResult->getMessages() as $message) {
+            echo $this->translate($message);
+        }
+    }
+}
+if ($confirmed) {
+    echo '<p>Учетная запись успешно подтверждена</p>';
+}
+if ($passwordChanged) {
+    echo '<p>Пароль успешно изменен</p>';
+}
+
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('action', $this->url('zfbuser/authentication'));
+$form->setAttribute('method', 'POST');
+
+echo $this->form()->openTag($form);
+echo $this->formCollection($form);
+echo $this->form()->closeTag();
+?>
+<a href="<?= $this->url('zfbuser/recover-password'); ?>" class="grey-text ml-1"
+   tabindex="4"><?= $this->translate('Forgot password?'); ?></a>

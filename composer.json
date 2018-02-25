@@ -19,7 +19,8 @@
         "zendframework/zend-captcha": "^2.7",
         "zendframework/zendservice-recaptcha": "^3.0",
         "doctrine/doctrine-module": "^1.2",
-        "doctrine/doctrine-orm-module": "^1.1"
+        "doctrine/doctrine-orm-module": "^1.1",
+        "zendframework/zend-serializer": "^2.8"
     },
     "autoload": {
         "psr-4": {
@@ -34,6 +35,7 @@
     "require-dev": {
         "zendframework/zend-developer-tools": "^1.1.0",
         "zendframework/zend-test": "^3.0.1",
-        "san/san-session-toolbar": "^1.0"
+        "san/san-session-toolbar": "^1.0",
+        "codeception/codeception": "^2.3"
     }
 }

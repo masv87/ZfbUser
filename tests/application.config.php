@@ -39,7 +39,7 @@ return [
         // modules are loaded. These effectively override configuration
         // provided by modules themselves. Paths may use GLOB_BRACE notation.
         'config_glob_paths' => [
-            realpath(__DIR__) . '/autoload/{{,*.}global,{,*.}local}.php',
+            realpath(__DIR__) . '/_data/config/{{,*.}global,{,*.}local}.php',
         ],
 
         // Whether or not to enable a configuration cache.
@@ -59,6 +59,6 @@ return [
         'module_map_cache_key' => 'application.module.cache',
 
         // The path in which to cache merged configuration.
-        'cache_dir' => __DIR__ . '/_data/cache/',
+        'cache_dir' => realpath(__DIR__) . '/_data/cache/',
     ],
 ];

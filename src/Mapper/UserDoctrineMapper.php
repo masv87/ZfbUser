@@ -3,30 +3,14 @@
 namespace ZfbUser\Mapper;
 
 use ZfbUser\Entity\UserInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class UserDoctrineMapper
  *
  * @package ZfbUser\Mapper
  */
-class UserDoctrineMapper implements UserMapperInterface
+class UserDoctrineMapper extends DoctrineMapper implements UserMapperInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * UserDoctrineMapper constructor.
-     *
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * @param UserInterface $user
      *

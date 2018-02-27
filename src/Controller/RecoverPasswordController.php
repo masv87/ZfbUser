@@ -64,7 +64,7 @@ class RecoverPasswordController extends AbstractActionController
 
     /**
      * @return array|\Zend\Http\Response|\Zend\View\Model\ViewModel
-     * @throws \ZfbUser\Service\Exception\TemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      */
     public function indexAction()

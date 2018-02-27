@@ -9,7 +9,7 @@ use ZfbUser\Entity\UserInterface;
  *
  * @package ZfbUser\Mapper
  */
-interface UserMapperInterface
+interface UserMapperInterface extends MapperInterface
 {
     /**
      * @param UserInterface $user

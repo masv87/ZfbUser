@@ -9,7 +9,7 @@ use ZfbUser\Entity\TokenInterface;
  *
  * @package ZfbUser\Mapper
  */
-interface TokenMapperInterface
+interface TokenMapperInterface extends MapperInterface
 {
     /**
      * @param TokenInterface $token

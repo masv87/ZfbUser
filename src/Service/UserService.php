@@ -76,7 +76,7 @@ class UserService
      *
      * @return null|\ZfbUser\Entity\UserInterface
      * @throws \ReflectionException
-     * @throws \ZfbUser\Service\Exception\TemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      * @throws \ZfbUser\Service\Exception\UserExistsException
      */
@@ -95,10 +95,22 @@ class UserService
 
         $user->setIdentityConfirmed(false);
         $user->setCredential($this->getAuthAdapter()->cryptCredential($user->getCredential()));
-        $user = $this->getAuthAdapter()->getMapper()->insert($user);
 
-        if ($this->moduleOptions->isEnableIdentityConfirmation()) {
-            $this->sendConfirmationCode($user);
+        $mapper = $this->getAuthAdapter()->getMapper();
+        $mapper->beginTransaction();
+
+        try {
+            $user = $mapper->insert($user);
+
+            if ($this->moduleOptions->isEnableIdentityConfirmation()) {
+                $this->sendConfirmationCode($user);
+            }
+
+            $mapper->commit();
+        } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException $ex) {
+            $mapper->rollback();
+
+            throw $ex;
         }
 
         return $user;
@@ -180,7 +192,7 @@ class UserService
     /**
      * @param \ZfbUser\Entity\UserInterface $user
      *
-     * @throws \ZfbUser\Service\Exception\TemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      */
     public function sendConfirmationCode(UserInterface $user)
@@ -208,7 +220,7 @@ class UserService
     /**
      * @param \ZfbUser\Entity\UserInterface $user
      *
-     * @throws \ZfbUser\Service\Exception\TemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      */
     public function sendRecoveryPasswordCode(UserInterface $user)
@@ -251,7 +263,7 @@ class UserService
      * @param string $name
      *
      * @return bool|string
-     * @throws \ZfbUser\Service\Exception\TemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      */
     protected function getMailTemplate(string $name)
     {
@@ -259,7 +271,7 @@ class UserService
         $templatePath = $this->moduleOptions->getMailSenderOptions()->getTemplatePath();
         $file = $templatePath . $locale . "/{$name}.html";
         if (!file_exists($file) || !is_readable($file)) {
-            throw new Exception\TemplateNotFoundException();
+            throw new Exception\MailTemplateNotFoundException($file);
         }
 
         return file_get_contents($file);

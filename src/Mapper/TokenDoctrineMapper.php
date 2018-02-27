@@ -3,30 +3,14 @@
 namespace ZfbUser\Mapper;
 
 use ZfbUser\Entity\TokenInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class TokenDoctrineMapper
  *
  * @package ZfbUser\Mapper
  */
-class TokenDoctrineMapper implements TokenMapperInterface
+class TokenDoctrineMapper extends DoctrineMapper implements TokenMapperInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * TokenDoctrineMapper constructor.
-     *
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     /**
      * @param TokenInterface $token
      *

@@ -4,22 +4,22 @@ namespace ZfbUser\Form\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use ZfbUser\Form\ChangePasswordForm;
+use ZfbUser\Form\ResetPasswordForm;
 use ZfbUser\Options\ModuleOptions;
 
 /**
- * Class ChangePasswordFormFactory
+ * Class ResetPasswordFormFactory
  *
  * @package ZfbUser\Form\Factory
  */
-class ChangePasswordFormFactory implements FactoryInterface
+class ResetPasswordFormFactory implements FactoryInterface
 {
     /**
      * @param \Interop\Container\ContainerInterface $container
      * @param string                                $requestedName
      * @param array|null                            $options
      *
-     * @return object|\ZfbUser\Form\ChangePasswordForm
+     * @return object|\ZfbUser\Form\ResetPasswordForm
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -27,10 +27,10 @@ class ChangePasswordFormFactory implements FactoryInterface
     {
         /** @var ModuleOptions $moduleOptions */
         $moduleOptions = $container->get(ModuleOptions::class);
-        $formOptions = $moduleOptions->getChangePasswordFormOptions();
+        $formOptions = $moduleOptions->getResetPasswordFormOptions();
         $recaptchaOptions = $moduleOptions->getRecaptchaOptions();
 
-        $form = new ChangePasswordForm($formOptions, $recaptchaOptions);
+        $form = new ResetPasswordForm($formOptions, $recaptchaOptions);
 
         return $form;
     }

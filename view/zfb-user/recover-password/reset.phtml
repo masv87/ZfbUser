@@ -5,7 +5,7 @@
  * @var ?\ZfbUser\AuthenticationResult $authResult
  */
 ?>
-<h1>ZfbUser::recoverPassword-change</h1>
+<h1>ZfbUser::recoverPassword-reset</h1>
 
 <?php if (!empty($authResult) && !$authResult->isValid()): ?>
     <?php foreach ($authResult->getMessages() as $message): ?>
@@ -16,7 +16,7 @@
     <?php
     $form = $this->form;
     $form->prepare();
-    $form->setAttribute('action', $this->url('zfbuser/recover-password', ['action' => 'change']));
+    $form->setAttribute('action', $this->url('zfbuser/recover-password', ['action' => 'reset']));
     $form->setAttribute('method', 'POST');
 
     echo $this->form()->openTag($form);

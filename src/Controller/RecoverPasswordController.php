@@ -28,7 +28,7 @@ class RecoverPasswordController extends AbstractActionController
     /**
      * @var Form
      */
-    private $changePasswordForm;
+    private $resetPasswordForm;
 
     /**
      * @var UserService
@@ -46,18 +46,19 @@ class RecoverPasswordController extends AbstractActionController
      * RecoverPasswordController constructor.
      *
      * @param \Zend\Form\Form                         $recoverForm
-     * @param \Zend\Form\Form                         $changeForm
+     * @param \Zend\Form\Form                         $resetForm
      * @param \ZfbUser\Service\UserService            $userService
      * @param \ZfbUser\Options\ModuleOptionsInterface $moduleOptions
      */
     public function __construct(
         Form $recoverForm,
-        Form $changeForm,
+        Form $resetForm,
         UserService $userService,
         ModuleOptionsInterface $moduleOptions
-    ) {
+    )
+    {
         $this->recoverPasswordForm = $recoverForm;
-        $this->changePasswordForm = $changeForm;
+        $this->resetPasswordForm = $resetForm;
         $this->userService = $userService;
         $this->moduleOptions = $moduleOptions;
     }
@@ -99,7 +100,7 @@ class RecoverPasswordController extends AbstractActionController
 
         $data = $this->recoverPasswordForm->getData();
 
-        $identity = $data[ $this->moduleOptions->getRecoverPasswordFormOptions()->getIdentityFieldName() ];
+        $identity = $data[$this->moduleOptions->getRecoverPasswordFormOptions()->getIdentityFieldName()];
         $user = $this->userService->getAuthAdapter()->getRepository()->getUserByIdentity($identity);
         if (!$user) {
             $viewModel->setVariable('identityNotFound', true);
@@ -135,7 +136,7 @@ class RecoverPasswordController extends AbstractActionController
     /**
      * @return \Zend\Http\Response|\Zend\View\Model\ViewModel
      */
-    public function changeAction()
+    public function resetAction()
     {
         /** @var \Zend\Http\PhpEnvironment\Request $request */
         $request = $this->getRequest();
@@ -143,7 +144,7 @@ class RecoverPasswordController extends AbstractActionController
         $viewModel = new ViewModel([
             'identity'   => null,
             'authResult' => null,
-            'form'       => $this->changePasswordForm,
+            'form'       => $this->resetPasswordForm,
         ]);
 
         if (!$request->isPost()) {
@@ -153,20 +154,20 @@ class RecoverPasswordController extends AbstractActionController
                 return $this->redirect()->toRoute('zfbuser/authentication');
             }
 
-            $this->changePasswordForm->get('identity')->setValue($identity);
-            $this->changePasswordForm->get('code')->setValue($code);
+            $this->resetPasswordForm->get('identity')->setValue($identity);
+            $this->resetPasswordForm->get('code')->setValue($code);
             $viewModel->setVariable('identity', $identity);
 
             return $viewModel;
         } else {
-            $this->changePasswordForm->setData($request->getPost());
-            if (!$this->changePasswordForm->isValid()) {
+            $this->resetPasswordForm->setData($request->getPost());
+            if (!$this->resetPasswordForm->isValid()) {
                 return $viewModel;
             }
 
-            $data = $this->changePasswordForm->getData();
-            $credentialFieldName = $this->moduleOptions->getChangePasswordFormOptions()->getCredentialFieldName();
-            $newPassword = $data[ $credentialFieldName ];
+            $data = $this->resetPasswordForm->getData();
+            $credentialFieldName = $this->moduleOptions->getResetPasswordFormOptions()->getCredentialFieldName();
+            $newPassword = $data[$credentialFieldName];
             $identity = $data['identity'];
             $code = $data['code'];
 

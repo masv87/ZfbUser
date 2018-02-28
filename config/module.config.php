@@ -60,8 +60,8 @@ return [
             // required, включить капчу?
             'enabled_recaptcha'    => true,
         ],
-        'change_password_form'  => [
-            'form_name'                     => 'changePasswordForm',
+        'reset_password_form'  => [
+            'form_name'                     => 'resetPasswordForm',
             'credential_field_label'        => 'Password',
             'credential_field_name'         => 'credential',
             'credential_verify_field_label' => 'Password Verify',
@@ -226,7 +226,7 @@ return [
             'zfbuser_token_mapper'           => Mapper\Factory\TokenDoctrineMapperFactory::class,
             'zfbuser_token_repository'       => Repository\Factory\TokenRepositoryFactory::class,
             'zfbuser_recover_password_form'  => Form\Factory\RecoverPasswordFormFactory::class,
-            'zfbuser_change_password_form'   => Form\Factory\ChangePasswordFormFactory::class,
+            'zfbuser_reset_password_form'    => Form\Factory\ResetPasswordFormFactory::class,
             'zfbuser_authentication_form'    => Form\Factory\AuthenticationFormFactory::class,
             'zfbuser_registration_form'      => Form\Factory\RegistrationFormFactory::class,
             'zfbuser_mail_sender_transport'  => Service\Factory\MailSenderTransportFactory::class,

@@ -31,7 +31,7 @@ class RecoverPasswordControllerFactory implements FactoryInterface
         $recoverForm = $container->get('zfbuser_recover_password_form');
 
         /** @var Form $form */
-        $changeForm = $container->get('zfbuser_change_password_form');
+        $resetForm = $container->get('zfbuser_reset_password_form');
 
         /** @var UserService $userService */
         $userService = $container->get(UserService::class);
@@ -39,6 +39,6 @@ class RecoverPasswordControllerFactory implements FactoryInterface
         /** @var ModuleOptions $moduleOptions */
         $moduleOptions = $container->get(ModuleOptions::class);
 
-        return new RecoverPasswordController($recoverForm, $changeForm, $userService, $moduleOptions);
+        return new RecoverPasswordController($recoverForm, $resetForm, $userService, $moduleOptions);
     }
 }

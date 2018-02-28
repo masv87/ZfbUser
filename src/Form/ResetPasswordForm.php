@@ -6,18 +6,18 @@ use Zend\Captcha\ReCaptcha;
 use Zend\Form\Element;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
-use ZfbUser\Options\ChangePasswordFormOptionsInterface;
+use ZfbUser\Options\ResetPasswordFormOptionsInterface;
 use ZfbUser\Options\ReCaptchaOptionsInterface;
 
 /**
- * Class ChangePasswordForm
+ * Class ResetPasswordForm
  *
  * @package ZfbUser\Form
  */
-class ChangePasswordForm extends Form
+class ResetPasswordForm extends Form
 {
     /**
-     * @var ChangePasswordFormOptionsInterface
+     * @var ResetPasswordFormOptionsInterface
      */
     protected $formOptions;
 
@@ -27,15 +27,16 @@ class ChangePasswordForm extends Form
     protected $recaptchaOptions;
 
     /**
-     * AuthenticationForm constructor.
+     * ResetPasswordForm constructor.
      *
-     * @param \ZfbUser\Options\ChangePasswordFormOptionsInterface $options
-     * @param \ZfbUser\Options\ReCaptchaOptionsInterface          $recaptchaOptions
+     * @param \ZfbUser\Options\ResetPasswordFormOptionsInterface $options
+     * @param \ZfbUser\Options\ReCaptchaOptionsInterface         $recaptchaOptions
      */
     public function __construct(
-        ChangePasswordFormOptionsInterface $options,
+        ResetPasswordFormOptionsInterface $options,
         ReCaptchaOptionsInterface $recaptchaOptions
-    ) {
+    )
+    {
         $this->formOptions = $options;
         $this->recaptchaOptions = $recaptchaOptions;
 
@@ -45,7 +46,7 @@ class ChangePasswordForm extends Form
     }
 
     /**
-     * @return \ZfbUser\Options\ChangePasswordFormOptionsInterface
+     * @return \ZfbUser\Options\ResetPasswordFormOptionsInterface
      */
     public function getFormOptions()
     {
@@ -53,7 +54,7 @@ class ChangePasswordForm extends Form
     }
 
     /**
-     * @return \ZfbUser\Form\ChangePasswordForm
+     * @return \ZfbUser\Form\ResetPasswordForm
      */
     protected function addElements(): self
     {
@@ -130,7 +131,7 @@ class ChangePasswordForm extends Form
     }
 
     /**
-     * @return \ZfbUser\Form\ChangePasswordForm
+     * @return \ZfbUser\Form\ResetPasswordForm
      */
     protected function addInputFilter(): self
     {

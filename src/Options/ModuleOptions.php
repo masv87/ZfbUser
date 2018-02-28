@@ -24,9 +24,9 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     protected $recoverPasswordFormOptions;
 
     /**
-     * @var ChangePasswordFormOptionsInterface
+     * @var ResetPasswordFormOptionsInterface
      */
-    protected $changePasswordFormOptions;
+    protected $resetPasswordFormOptions;
 
     /**
      * @var AuthenticationFormOptionsInterface
@@ -130,12 +130,12 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
         }
         $this->recoverPasswordFormOptions = new RecoverPasswordFormOptions($recoverPasswordFormOptions);
 
-        $changePasswordFormOptions = [];
-        if (!empty($options['change_password_form'])) {
-            $changePasswordFormOptions = $options['change_password_form'];
-            unset($options['change_password_form']);
+        $resetPasswordFormOptions = [];
+        if (!empty($options['reset_password_form'])) {
+            $resetPasswordFormOptions = $options['reset_password_form'];
+            unset($options['reset_password_form']);
         }
-        $this->changePasswordFormOptions = new ChangePasswordFormOptions($changePasswordFormOptions);
+        $this->resetPasswordFormOptions = new ResetPasswordFormOptions($resetPasswordFormOptions);
 
         $authenticationFormOptions = [];
         if (!empty($options['authentication_form'])) {
@@ -178,21 +178,21 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     }
 
     /**
-     * @return \ZfbUser\Options\ChangePasswordFormOptionsInterface
+     * @return \ZfbUser\Options\ResetPasswordFormOptionsInterface
      */
-    public function getChangePasswordFormOptions(): ChangePasswordFormOptionsInterface
+    public function getResetPasswordFormOptions(): ResetPasswordFormOptionsInterface
     {
-        return $this->changePasswordFormOptions;
+        return $this->resetPasswordFormOptions;
     }
 
     /**
-     * @param \ZfbUser\Options\ChangePasswordFormOptionsInterface $changePasswordFormOptions
+     * @param \ZfbUser\Options\ResetPasswordFormOptionsInterface $resetPasswordFormOptions
      *
      * @return \ZfbUser\Options\ModuleOptions
      */
-    public function setChangePasswordFormOptions(ChangePasswordFormOptionsInterface $changePasswordFormOptions): self
+    public function setResetPasswordFormOptions(ResetPasswordFormOptionsInterface $resetPasswordFormOptions): self
     {
-        $this->changePasswordFormOptions = $changePasswordFormOptions;
+        $this->resetPasswordFormOptions = $resetPasswordFormOptions;
 
         return $this;
     }
@@ -231,7 +231,8 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
      * @return ModuleOptions
      */
     public function setAuthenticationFormOptions(AuthenticationFormOptionsInterface $authenticationFormOptions
-    ): ModuleOptions {
+    ): ModuleOptions
+    {
         $this->authenticationFormOptions = $authenticationFormOptions;
 
         return $this;

@@ -3,11 +3,11 @@
 namespace ZfbUser\Options;
 
 /**
- * Interface ChangePasswordFormOptionsInterface
+ * Interface ResetPasswordFormOptionsInterface
  *
  * @package ZfbUser\Options
  */
-interface ChangePasswordFormOptionsInterface extends FormOptionsInterface
+interface ResetPasswordFormOptionsInterface extends FormOptionsInterface
 {
     /**
      * @return string

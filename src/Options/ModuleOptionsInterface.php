@@ -20,9 +20,9 @@ interface ModuleOptionsInterface extends OptionsInterface
     public function getRecoverPasswordFormOptions(): RecoverPasswordFormOptionsInterface;
 
     /**
-     * @return \ZfbUser\Options\ChangePasswordFormOptionsInterface
+     * @return \ZfbUser\Options\ResetPasswordFormOptionsInterface
      */
-    public function getChangePasswordFormOptions(): ChangePasswordFormOptionsInterface;
+    public function getResetPasswordFormOptions(): ResetPasswordFormOptionsInterface;
 
     /**
      * @return AuthenticationFormOptionsInterface

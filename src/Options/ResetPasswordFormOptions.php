@@ -3,16 +3,16 @@
 namespace ZfbUser\Options;
 
 /**
- * Class ChangePasswordFormOptions
+ * Class ResetPasswordFormOptions
  *
  * @package ZfbUser\Options
  */
-class ChangePasswordFormOptions extends FormOptions implements ChangePasswordFormOptionsInterface
+class ResetPasswordFormOptions extends FormOptions implements ResetPasswordFormOptionsInterface
 {
     /**
      * @var string
      */
-    protected $formName = 'changePasswordForm';
+    protected $formName = 'resetPasswordForm';
 
     /**
      * @var string
@@ -45,9 +45,9 @@ class ChangePasswordFormOptions extends FormOptions implements ChangePasswordFor
     /**
      * @param string $credentialFieldLabel
      *
-     * @return ChangePasswordFormOptions
+     * @return ResetPasswordFormOptions
      */
-    public function setCredentialFieldLabel(string $credentialFieldLabel): ChangePasswordFormOptions
+    public function setCredentialFieldLabel(string $credentialFieldLabel): ResetPasswordFormOptions
     {
         $this->credentialFieldLabel = $credentialFieldLabel;
 
@@ -65,9 +65,9 @@ class ChangePasswordFormOptions extends FormOptions implements ChangePasswordFor
     /**
      * @param string $credentialFieldName
      *
-     * @return ChangePasswordFormOptions
+     * @return ResetPasswordFormOptions
      */
-    public function setCredentialFieldName(string $credentialFieldName): ChangePasswordFormOptions
+    public function setCredentialFieldName(string $credentialFieldName): ResetPasswordFormOptions
     {
         $this->credentialFieldName = $credentialFieldName;
 
@@ -85,9 +85,9 @@ class ChangePasswordFormOptions extends FormOptions implements ChangePasswordFor
     /**
      * @param string $credentialVerifyFieldLabel
      *
-     * @return ChangePasswordFormOptions
+     * @return ResetPasswordFormOptions
      */
-    public function setCredentialVerifyFieldLabel(string $credentialVerifyFieldLabel): ChangePasswordFormOptions
+    public function setCredentialVerifyFieldLabel(string $credentialVerifyFieldLabel): ResetPasswordFormOptions
     {
         $this->credentialVerifyFieldLabel = $credentialVerifyFieldLabel;
 
@@ -105,9 +105,9 @@ class ChangePasswordFormOptions extends FormOptions implements ChangePasswordFor
     /**
      * @param string $credentialVerifyFieldName
      *
-     * @return ChangePasswordFormOptions
+     * @return ResetPasswordFormOptions
      */
-    public function setCredentialVerifyFieldName(string $credentialVerifyFieldName): ChangePasswordFormOptions
+    public function setCredentialVerifyFieldName(string $credentialVerifyFieldName): ResetPasswordFormOptions
     {
         $this->credentialVerifyFieldName = $credentialVerifyFieldName;
 

@@ -48,7 +48,8 @@ class UserService
         ModuleOptionsInterface $moduleOptions,
         MailSenderInterface $mailSender,
         TokenService $tokenService
-    ) {
+    )
+    {
         $this->authAdapter = $authAdapter;
         $this->moduleOptions = $moduleOptions;
         $this->mailSender = $mailSender;
@@ -149,7 +150,7 @@ class UserService
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -184,7 +185,7 @@ class UserService
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -228,7 +229,7 @@ class UserService
         // generate new token and revoke old reset_password tokens
         $token = $this->tokenService->generateToken($user, TokenService::TYPE_RESET_PASSWORD, true);
 
-        $url = $this->buildUrl('user/recover-password/change', [
+        $url = $this->buildUrl('user/recover-password/reset', [
             'identity' => $user->getIdentity(),
             'code'     => $token->getValue(),
         ]);
@@ -250,7 +251,7 @@ class UserService
     protected function buildUrl(string $uri, array $data): string
     {
         $url = $this->moduleOptions->getBaseUrl();
-        if ($url[ strlen($url) - 1 ] !== '/') {
+        if ($url[strlen($url) - 1] !== '/') {
             $url .= '/';
         }
         $url .= $uri . '?';

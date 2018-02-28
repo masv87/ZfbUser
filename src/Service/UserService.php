@@ -73,15 +73,17 @@ class UserService
     }
 
     /**
+     * Register new user
+     *
      * @param array $data
      *
-     * @return null|\ZfbUser\Entity\UserInterface
+     * @return \ZfbUser\Entity\UserInterface
      * @throws \ReflectionException
      * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      * @throws \ZfbUser\Service\Exception\UserExistsException
      */
-    public function register(array $data): ?UserInterface
+    public function register(array $data): UserInterface
     {
         $className = $this->getModuleOptions()->getUserEntityClass();
         $hydrator = new ClassMethodsHydrator();
@@ -91,7 +93,7 @@ class UserService
 
         $existUser = $this->getAuthAdapter()->getRepository()->getUserByIdentity($user->getIdentity());
         if ($existUser instanceof UserInterface) {
-            throw new Exception\UserExistsException();
+            throw new Exception\UserExistsException($user->getIdentity());
         }
 
         $user->setIdentityConfirmed(false);
@@ -106,6 +108,51 @@ class UserService
             if ($this->moduleOptions->isEnableIdentityConfirmation()) {
                 $this->sendConfirmationCode($user);
             }
+
+            $mapper->commit();
+        } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException $ex) {
+            $mapper->rollback();
+
+            throw $ex;
+        }
+
+        return $user;
+    }
+
+    /**
+     * Add new user
+     *
+     * @param array $data
+     *
+     * @return \ZfbUser\Entity\UserInterface
+     * @throws \ReflectionException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
+     * @throws \ZfbUser\Service\Exception\UserExistsException
+     */
+    public function addUser(array $data): UserInterface
+    {
+        $className = $this->getModuleOptions()->getUserEntityClass();
+        $hydrator = new ClassMethodsHydrator();
+
+        /** @var UserInterface $user */
+        $user = $hydrator->hydrate($data, (new \ReflectionClass($className))->newInstanceWithoutConstructor());
+
+        $existUser = $this->getAuthAdapter()->getRepository()->getUserByIdentity($user->getIdentity());
+        if ($existUser instanceof UserInterface) {
+            throw new Exception\UserExistsException($user->getIdentity());
+        }
+
+        $user->setIdentityConfirmed(false);
+        $user->setCredential($this->getAuthAdapter()->cryptCredential(uniqid())); // generate random password
+
+        $mapper = $this->getAuthAdapter()->getMapper();
+        $mapper->beginTransaction();
+
+        try {
+            $user = $mapper->insert($user);
+
+            $this->sendSetPasswordCode($user);
 
             $mapper->commit();
         } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException $ex) {
@@ -156,6 +203,8 @@ class UserService
     }
 
     /**
+     * Reset user password
+     *
      * @param string $identity
      * @param string $code
      * @param string $newPassword
@@ -179,6 +228,79 @@ class UserService
                     $resultCode = AuthenticationResult::SUCCESS;
                 } catch (\Exception $ex) {
                     $resultCode = AuthenticationResult::FAILURE_RECOVER_PASSWORD;
+                }
+            } else {
+                $resultCode = AuthenticationResult::FAILURE_TOKEN_INVALID;
+            }
+        }
+
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
+
+        return new AuthenticationResult($resultCode, $user, $messages);
+    }
+
+    /**
+     * Change user password
+     *
+     * @param string $identity
+     * @param string $oldPassword
+     * @param string $newPassword
+     *
+     * @return \ZfbUser\AuthenticationResult
+     */
+    public function changePassword(string $identity, string $oldPassword, string $newPassword): AuthenticationResult
+    {
+        $resultCode = null;
+        $user = $this->getAuthAdapter()->getRepository()->getUserByIdentity($identity);
+        if (!$user) {
+            $resultCode = AuthenticationResult::FAILURE_IDENTITY_NOT_FOUND;
+        } elseif ($user->isIdentityConfirmed() !== true) {
+            $resultCode = AuthenticationResult::FAILURE_IDENTITY_NOT_CONFIRMED;
+        } else {
+            $checkOldPassword = $this->getAuthAdapter()->verifyCredential($oldPassword, $user->getCredential());
+            if ($checkOldPassword === true) {
+                try {
+                    $user->setCredential($this->getAuthAdapter()->cryptCredential($newPassword));
+                    $this->getAuthAdapter()->getMapper()->update($user);
+                    $resultCode = AuthenticationResult::SUCCESS;
+                } catch (\Exception $ex) {
+                    $resultCode = AuthenticationResult::FAILURE_CHANGE_PASSWORD;
+                }
+            } else {
+                $resultCode = AuthenticationResult::FAILURE_OLD_PASSWORD_INVALID;
+            }
+        }
+
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
+
+        return new AuthenticationResult($resultCode, $user, $messages);
+    }
+
+    /**
+     * Set password for new user
+     *
+     * @param string $identity
+     * @param string $code
+     * @param string $newPassword
+     *
+     * @return \ZfbUser\AuthenticationResult
+     */
+    public function setPassword(string $identity, string $code, string $newPassword): AuthenticationResult
+    {
+        $resultCode = null;
+        $user = $this->getAuthAdapter()->getRepository()->getUserByIdentity($identity);
+        if (!$user) {
+            $resultCode = AuthenticationResult::FAILURE_IDENTITY_NOT_FOUND;
+        } else {
+            $isValid = $this->tokenService->checkToken($user, $code, TokenService::TYPE_SET_PASSWORD, true);
+            if ($isValid === true) {
+                $user->setIdentityConfirmed(true);
+                try {
+                    $user->setCredential($this->getAuthAdapter()->cryptCredential($newPassword));
+                    $this->getAuthAdapter()->getMapper()->update($user);
+                    $resultCode = AuthenticationResult::SUCCESS;
+                } catch (\Exception $ex) {
+                    $resultCode = AuthenticationResult::FAILURE_SET_PASSWORD;
                 }
             } else {
                 $resultCode = AuthenticationResult::FAILURE_TOKEN_INVALID;
@@ -239,6 +361,32 @@ class UserService
         ];
 
         $template = $this->getMailTemplate('recover_password');
+        $this->mailSender->send($user, $template, $data);
+    }
+
+    /**
+     * Send mail for set password for new user
+     *
+     * @param \ZfbUser\Entity\UserInterface $user
+     *
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
+     */
+    public function sendSetPasswordCode(UserInterface $user)
+    {
+        // generate new token and revoke old set_password tokens
+        $token = $this->tokenService->generateToken($user, TokenService::TYPE_SET_PASSWORD, true);
+
+        $url = $this->buildUrl('user/new-user/set-password', [
+            'identity' => $user->getIdentity(),
+            'code'     => $token->getValue(),
+        ]);
+
+        $data = [
+            'set_password_url' => $url,
+        ];
+
+        $template = $this->getMailTemplate('set_password');
         $this->mailSender->send($user, $template, $data);
     }
 

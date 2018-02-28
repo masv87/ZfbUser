@@ -101,9 +101,6 @@ class RegistrationController extends AbstractActionController
 
         try {
             $user = $this->userService->register($data);
-            if (!$user) {
-                return $viewModel;
-            }
         } catch (UserExistsException $ex) {
             $viewModel->setVariable('error', true);
             $viewModel->setVariable('message', $ex->getMessage());
@@ -114,8 +111,8 @@ class RegistrationController extends AbstractActionController
         if ($this->moduleOptions->isAuthenticateAfterRegistration()) {
             $identityFieldName = $this->moduleOptions->getRegistrationFormOptions()->getIdentityFieldName();
             $credentialFieldName = $this->moduleOptions->getRegistrationFormOptions()->getCredentialFieldName();
-            $parameters[ $identityFieldName ] = $user->getIdentity();
-            $parameters[ $credentialFieldName ] = $prg[ $credentialFieldName ];
+            $parameters[$identityFieldName] = $user->getIdentity();
+            $parameters[$credentialFieldName] = $prg[$credentialFieldName];
             $request->setPost(new Parameters($parameters));
 
             return $this->forward()->dispatch(AuthenticationController::class, ['action' => 'authenticate']);

@@ -26,11 +26,17 @@ class TokenService
     public const TYPE_RESET_PASSWORD = 'reset_password';
 
     /**
+     * Token for set password for new added user
+     */
+    public const TYPE_SET_PASSWORD = 'set_password';
+
+    /**
      * Время жизни токенов в минутах
      */
     protected const TYPE_TTL = [
-        self::TYPE_CONFIRMATION   => 60 * 24, // 24 hours
+        self::TYPE_CONFIRMATION   => 60 * 24 * 365, // 1 year
         self::TYPE_RESET_PASSWORD => 60 * 1, // 1 hour
+        self::TYPE_SET_PASSWORD   => 60 * 24 * 7, // 7 days
     ];
 
     /**
@@ -44,7 +50,8 @@ class TokenService
         TokenRepositoryInterface $repository,
         TokenMapperInterface $mapper,
         ModuleOptionsInterface $moduleOptions
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->mapper = $mapper;
         $this->moduleOptions = $moduleOptions;
@@ -58,6 +65,7 @@ class TokenService
         return [
             self::TYPE_CONFIRMATION,
             self::TYPE_RESET_PASSWORD,
+            self::TYPE_SET_PASSWORD,
         ];
     }
 
@@ -107,7 +115,7 @@ class TokenService
         $token->setRevoked(false);
         $token->setValue($tokenValue);
 
-        $ttl = self::TYPE_TTL[ $type ];
+        $ttl = self::TYPE_TTL[$type];
         $expiredAt = (new \DateTime())->modify("+ {$ttl} minutes");
         $token->setExpiredAt($expiredAt);
 

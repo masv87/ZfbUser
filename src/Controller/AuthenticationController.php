@@ -52,7 +52,8 @@ class AuthenticationController extends AbstractActionController
         AuthenticationForm $authenticationForm,
         AdapterInterface $authenticationAdapter,
         ModuleOptionsInterface $moduleOptions
-    ) {
+    )
+    {
         $this->authenticationForm = $authenticationForm;
         $this->authenticationAdapter = $authenticationAdapter;
         $this->moduleOptions = $moduleOptions;
@@ -120,8 +121,8 @@ class AuthenticationController extends AbstractActionController
         }
 
         $this->authenticationAdapter
-            ->setIdentity($data[ $this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName() ])
-            ->setCredential($data[ $this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName() ]);
+            ->setIdentity($data[$this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName()])
+            ->setCredential($data[$this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName()]);
 
         /** @var AuthenticationResult $authResult */
         $authResult = $this->zfbAuthentication()->getAuthService()->authenticate($this->authenticationAdapter);
@@ -136,16 +137,16 @@ class AuthenticationController extends AbstractActionController
                     ['query' => $query]);
             }
 
-            $vewModel = new ViewModel([
+            $viewModel = new ViewModel([
                 'form'               => $this->authenticationForm,
                 'enableRegistration' => $this->moduleOptions->isEnableRegistration(),
                 'confirmed'          => false,
                 'passwordChanged'    => false,
                 'authResult'         => $authResult,
             ]);
-            $vewModel->setTemplate('zfb-user/authentication/authentication');
+            $viewModel->setTemplate('zfb-user/authentication/authentication');
 
-            return $vewModel;
+            return $viewModel;
         }
 
         return $this->redirect()->toRoute($this->moduleOptions->getAuthenticationCallbackRoute());

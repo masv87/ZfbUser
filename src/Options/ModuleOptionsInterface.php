@@ -35,6 +35,21 @@ interface ModuleOptionsInterface extends OptionsInterface
     public function getRegistrationFormOptions(): RegistrationFormOptionsInterface;
 
     /**
+     * @return ChangePasswordFormOptionsInterface
+     */
+    public function getChangePasswordFormOptions(): ChangePasswordFormOptionsInterface;
+
+    /**
+     * @return NewUserFormOptionsInterface
+     */
+    public function getNewUserFormOptions(): NewUserFormOptionsInterface;
+
+    /**
+     * @return SetPasswordFormOptionsInterface
+     */
+    public function getSetPasswordFormOptions(): SetPasswordFormOptionsInterface;
+
+    /**
      * @return MailSenderOptionsInterface
      */
     public function getMailSenderOptions(): MailSenderOptionsInterface;

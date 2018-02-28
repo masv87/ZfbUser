@@ -60,7 +60,7 @@ return [
             // required, включить капчу?
             'enabled_recaptcha'    => true,
         ],
-        'reset_password_form'  => [
+        'reset_password_form'   => [
             'form_name'                     => 'resetPasswordForm',
             'credential_field_label'        => 'Password',
             'credential_field_name'         => 'credential',
@@ -82,13 +82,50 @@ return [
             'csrf_timeout'           => 60 * 3,
 
             // required, включить капчу?
-            'enabled_recaptcha'      => true,
+            'enabled_recaptcha'      => false,
         ],
         'registration_form'     => [
+            'form_name'                     => 'registrationForm',
             'credential_verify_field_label' => 'Password Verify',
             'credential_verify_field_name'  => 'credential_verify',
             'submit_button_text'            => 'Sign up',
             'csrf_timeout'                  => 60 * 5,
+
+            // required, включить капчу?
+            'enabled_recaptcha'             => false,
+        ],
+        'change_password_form'  => [
+            'form_name'                     => 'changePasswordForm',
+            'credential_old_field_label'    => 'Old password',
+            'credential_old_field_name'     => 'credential_old',
+            'credential_field_label'        => 'Password',
+            'credential_field_name'         => 'credential',
+            'credential_verify_field_label' => 'Password Verify',
+            'credential_verify_field_name'  => 'credential_verify',
+            'submit_button_text'            => 'Submit',
+            'csrf_timeout'                  => 60 * 3,
+
+            // required, включить капчу?
+            'enabled_recaptcha'             => false,
+        ],
+        'new_user_form'         => [
+            'form_name'            => 'addUserForm',
+            'identity_field_label' => 'E-mail',
+            'identity_field_name'  => 'identity',
+            'submit_button_text'   => 'Sign up',
+            'csrf_timeout'         => 60 * 5,
+
+            // required, включить капчу?
+            'enabled_recaptcha'    => false,
+        ],
+        'set_password_form'     => [
+            'form_name'                     => 'setPasswordForm',
+            'credential_field_label'        => 'Password',
+            'credential_field_name'         => 'credential',
+            'credential_verify_field_label' => 'Password Verify',
+            'credential_verify_field_name'  => 'credential_verify',
+            'submit_button_text'            => 'Submit',
+            'csrf_timeout'                  => 60 * 3,
 
             // required, включить капчу?
             'enabled_recaptcha'             => false,
@@ -108,7 +145,7 @@ return [
         ],
     ],
 
-    'router' => [
+    'router'             => [
         'routes' => [
             'zfbuser' => [
                 'type'          => Literal::class,
@@ -116,7 +153,7 @@ return [
                 'options'       => [
                     'route'    => '/user',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\UserController::class,
                         'action'     => 'index',
                     ],
                 ],
@@ -182,11 +219,30 @@ return [
                             ],
                         ],
                     ],
+                    'change-password'  => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/change-password[/:action]',
+                            'defaults' => [
+                                'controller' => Controller\ChangePasswordController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                    ],
+                    'new-user'         => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/new-user[/:action]',
+                            'defaults' => [
+                                'controller' => Controller\NewUserController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
     ],
-
     'view_manager'       => [
         'template_path_stack' => [
             __DIR__ . '/../view',
@@ -194,12 +250,14 @@ return [
     ],
     'controllers'        => [
         'factories' => [
-            Controller\IndexController::class           => Controller\Factory\IndexControllerFactory::class,
+            Controller\UserController::class            => Controller\Factory\UserControllerFactory::class,
             Controller\AuthenticationController::class  => Controller\Factory\AuthenticationControllerFactory::class,
             Controller\RegistrationController::class    => Controller\Factory\RegistrationControllerFactory::class,
             Controller\LogoutController::class          => Controller\Factory\LogoutControllerFactory::class,
             Controller\ConfirmationController::class    => Controller\Factory\ConfirmationControllerFactory::class,
             Controller\RecoverPasswordController::class => Controller\Factory\RecoverPasswordControllerFactory::class,
+            Controller\ChangePasswordController::class  => Controller\Factory\ChangePasswordControllerFactory::class,
+            Controller\NewUserController::class         => Controller\Factory\NewUserControllerFactory::class,
         ],
     ],
     // We register module-provided controller plugins under this key.
@@ -229,6 +287,9 @@ return [
             'zfbuser_reset_password_form'    => Form\Factory\ResetPasswordFormFactory::class,
             'zfbuser_authentication_form'    => Form\Factory\AuthenticationFormFactory::class,
             'zfbuser_registration_form'      => Form\Factory\RegistrationFormFactory::class,
+            'zfbuser_change_password_form'   => Form\Factory\ChangePasswordFormFactory::class,
+            'zfbuser_new_user_form'          => Form\Factory\NewUserFormFactory::class,
+            'zfbuser_set_password_form'      => Form\Factory\SetPasswordFormFactory::class,
             'zfbuser_mail_sender_transport'  => Service\Factory\MailSenderTransportFactory::class,
         ],
     ],

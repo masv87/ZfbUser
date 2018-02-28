@@ -1,25 +1,25 @@
 <?php
 
-namespace ZfbUser\Controller\Factory;
+namespace ZfbUser\Form\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use ZfbUser\Controller\IndexController;
+use ZfbUser\Form\NewUserForm;
 use ZfbUser\Options\ModuleOptions;
 
 /**
- * Class IndexControllerFactory
+ * Class NewUserFormFactory
  *
- * @package ZfbUser\Controller\Factory
+ * @package ZfbUser\Form\Factory
  */
-class IndexControllerFactory implements FactoryInterface
+class NewUserFormFactory implements FactoryInterface
 {
     /**
      * @param \Interop\Container\ContainerInterface $container
      * @param string                                $requestedName
      * @param array|null                            $options
      *
-     * @return object|\ZfbUser\Controller\IndexController
+     * @return object|\ZfbUser\Form\NewUserForm
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -27,7 +27,11 @@ class IndexControllerFactory implements FactoryInterface
     {
         /** @var ModuleOptions $moduleOptions */
         $moduleOptions = $container->get(ModuleOptions::class);
+        $formOptions = $moduleOptions->getNewUserFormOptions();
+        $recaptchaOptions = $moduleOptions->getRecaptchaOptions();
 
-        return new IndexController($moduleOptions);
+        $form = new NewUserForm($formOptions, $recaptchaOptions);
+
+        return $form;
     }
 }

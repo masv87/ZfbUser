@@ -39,6 +39,21 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     protected $registrationFormOptions;
 
     /**
+     * @var ChangePasswordFormOptionsInterface
+     */
+    protected $changePasswordFormOptions;
+
+    /**
+     * @var NewUserFormOptionsInterface
+     */
+    protected $newUserFormOptions;
+
+    /**
+     * @var SetPasswordFormOptionsInterface
+     */
+    protected $setPasswordFormOptions;
+
+    /**
      * @var MailSenderOptionsInterface
      */
     protected $mailSenderOptions;
@@ -76,7 +91,7 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     /**
      * @var string
      */
-    protected $authenticationWidgetViewTpl = 'zfb-user/index/authentication_widget';
+    protected $authenticationWidgetViewTpl = 'zfb-user/user/authentication_widget';
 
     /**
      * @var int
@@ -150,6 +165,27 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
             unset($options['registration_form']);
         }
         $this->registrationFormOptions = new RegistrationFormOptions($registrationFormOptions);
+
+        $changePasswordFormOptions = [];
+        if (!empty($options['change_password_form'])) {
+            $changePasswordFormOptions = $options['change_password_form'];
+            unset($options['change_password_form']);
+        }
+        $this->changePasswordFormOptions = new ChangePasswordFormOptions($changePasswordFormOptions);
+
+        $newUserFormOptions = [];
+        if (!empty($options['new_user_form'])) {
+            $newUserFormOptions = $options['new_user_form'];
+            unset($options['new_user_form']);
+        }
+        $this->newUserFormOptions = new NewUserFormOptions($newUserFormOptions);
+
+        $setPasswordFormOptions = [];
+        if (!empty($options['set_password_form'])) {
+            $setPasswordFormOptions = $options['set_password_form'];
+            unset($options['set_password_form']);
+        }
+        $this->setPasswordFormOptions = new SetPasswordFormOptions($setPasswordFormOptions);
 
         $mailSenderOptions = [];
         if (!empty($options['mail_sender'])) {
@@ -254,6 +290,66 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     public function setRegistrationFormOptions(RegistrationFormOptionsInterface $registrationFormOptions): ModuleOptions
     {
         $this->registrationFormOptions = $registrationFormOptions;
+
+        return $this;
+    }
+
+    /**
+     * @return \ZfbUser\Options\ChangePasswordFormOptionsInterface
+     */
+    public function getChangePasswordFormOptions(): ChangePasswordFormOptionsInterface
+    {
+        return $this->changePasswordFormOptions;
+    }
+
+    /**
+     * @param \ZfbUser\Options\ChangePasswordFormOptionsInterface $changePasswordFormOptions
+     *
+     * @return ModuleOptions
+     */
+    public function setChangePasswordFormOptions(ChangePasswordFormOptionsInterface $changePasswordFormOptions): ModuleOptions
+    {
+        $this->changePasswordFormOptions = $changePasswordFormOptions;
+
+        return $this;
+    }
+
+    /**
+     * @return \ZfbUser\Options\NewUserFormOptionsInterface
+     */
+    public function getNewUserFormOptions(): NewUserFormOptionsInterface
+    {
+        return $this->newUserFormOptions;
+    }
+
+    /**
+     * @param \ZfbUser\Options\NewUserFormOptionsInterface $newUserFormOptions
+     *
+     * @return \ZfbUser\Options\ModuleOptions
+     */
+    public function setNewUserFormOptions(NewUserFormOptionsInterface $newUserFormOptions): ModuleOptions
+    {
+        $this->newUserFormOptions = $newUserFormOptions;
+
+        return $this;
+    }
+
+    /**
+     * @return \ZfbUser\Options\SetPasswordFormOptionsInterface
+     */
+    public function getSetPasswordFormOptions(): SetPasswordFormOptionsInterface
+    {
+        return $this->setPasswordFormOptions;
+    }
+
+    /**
+     * @param \ZfbUser\Options\SetPasswordFormOptionsInterface $setPasswordFormOptions
+     *
+     * @return ModuleOptions
+     */
+    public function setSetPasswordFormOptions(SetPasswordFormOptionsInterface $setPasswordFormOptions): ModuleOptions
+    {
+        $this->setPasswordFormOptions = $setPasswordFormOptions;
 
         return $this;
     }

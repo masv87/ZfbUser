@@ -1,0 +1,34 @@
+<?php
+/**
+ * @var Zend\Form\Form $form
+ * @var ZfbUser\AuthenticationResult|null $authResult
+ */
+?>
+<h1>ZfbUser::changePassword</h1>
+
+<?php if(isset($authResult) && $authResult->isValid()): ?>
+<p>Password successfully changed!</p>
+<?php else: ?>
+    <?php if(isset($authResult) && !$authResult->isValid()): ?>
+        <?php
+        if (isset($authResult)) {
+            if (!$authResult->isValid()) {
+                echo "Код ошибки: " . $authResult->getCode() . "<br/>";
+                foreach ($authResult->getMessages() as $message) {
+                    echo $this->translate($message);
+                }
+            }
+        }
+        ?>
+    <?php endif; ?>
+    <?php
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('action', $this->url('zfbuser/change-password'));
+    $form->setAttribute('method', 'POST');
+
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+    ?>
+<?php endif; ?>

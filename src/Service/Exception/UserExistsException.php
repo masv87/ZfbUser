@@ -9,20 +9,19 @@ namespace ZfbUser\Service\Exception;
  */
 class UserExistsException extends \Exception
 {
-    protected const ERROR_MESSAGE = 'Пользователь с таким E-mail адресом уже зарегистрирован';
+    protected const ERROR_MESSAGE = 'Пользователь E-mail "%s" адресом уже зарегистрирован';
 
     /**
      * UserExistsException constructor.
      *
-     * @param string          $message
+     * @param string          $identity
      * @param int             $code
      * @param \Throwable|null $previous
      */
-    public function __construct($message = "", $code = 0, \Throwable $previous = null)
+    public function __construct(string $identity, $code = 0, \Throwable $previous = null)
     {
-        if (empty($message)) {
-            $message = static::ERROR_MESSAGE;
-        }
+        $message = sprintf(self::ERROR_MESSAGE, $identity);
+
         parent::__construct($message, $code, $previous);
     }
 }

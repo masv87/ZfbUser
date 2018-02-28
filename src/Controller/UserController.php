@@ -8,14 +8,14 @@ use Zend\View\Model\ViewModel;
 use ZfbUser\Options\ModuleOptionsInterface;
 
 /**
- * Class IndexController
+ * Class UserController
  *
  * @method Plugin\ZfbAuthentication zfbAuthentication()
  * @method Response|array prg(string $redirect = null, bool $redirectToUrl = false)
  *
  * @package ZfbUser\Controller
  */
-class IndexController extends AbstractActionController
+class UserController extends AbstractActionController
 {
     /**
      * Параметры модуля

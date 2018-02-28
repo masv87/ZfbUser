@@ -23,7 +23,7 @@ class AuthenticationWidget extends AbstractHelper
      *
      * @var string
      */
-    private $viewTemplate = 'zfb-user/index/authentication_widget';
+    private $viewTemplate = 'zfb-user/user/authentication_widget';
 
     /**
      * AuthenticationWidget constructor.

@@ -32,6 +32,21 @@ class AuthenticationResult extends Result
      */
     const FAILURE_TOKEN_INVALID = -93;
 
+    /**
+     * Change password error
+     */
+    const FAILURE_CHANGE_PASSWORD = -94;
+
+    /**
+     * Invalid old password
+     */
+    const FAILURE_OLD_PASSWORD_INVALID = -95;
+
+    /**
+     * Fail set password
+     */
+    const FAILURE_SET_PASSWORD = -96;
+
     const MESSAGE_TEMPLATES = [
         self::FAILURE                        => "Authentication failed. Please try again.",
         self::FAILURE_IDENTITY_NOT_FOUND     => "Authentication failed. Please try again.",
@@ -42,6 +57,9 @@ class AuthenticationResult extends Result
         self::FAILURE_IDENTITY_CONFIRMATION  => "Confirmation failed. Please try again.",
         self::FAILURE_RECOVER_PASSWORD       => "Password reset failed. Please try again.",
         self::FAILURE_TOKEN_INVALID          => "Token invalid. Please try again.",
+        self::FAILURE_CHANGE_PASSWORD        => "Change password error. Please try again.",
+        self::FAILURE_OLD_PASSWORD_INVALID   => "Old password invalid. Please try again.",
+        self::FAILURE_SET_PASSWORD           => "Set password error. Please try again.",
 
         self::SUCCESS => "Authentication success",
     ];

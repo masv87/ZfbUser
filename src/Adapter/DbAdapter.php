@@ -5,6 +5,9 @@ namespace ZfbUser\Adapter;
 use Zend\Crypt\Password\Bcrypt;
 use ZfbUser\AuthenticationResult;
 use ZfbUser\Entity\UserInterface;
+use ZfbUser\Mapper\UserMapperInterface;
+use ZfbUser\Options\ModuleOptionsInterface;
+use ZfbUser\Repository\UserRepositoryInterface;
 
 /**
  * Class DbAdapter
@@ -13,6 +16,27 @@ use ZfbUser\Entity\UserInterface;
  */
 class DbAdapter extends AbstractAdapter
 {
+
+    /**
+     * @var Bcrypt
+     */
+    protected $bcrypt;
+
+    /**
+     * DbAdapter constructor.
+     *
+     * @param \ZfbUser\Options\ModuleOptionsInterface     $moduleOptions
+     * @param \ZfbUser\Mapper\UserMapperInterface         $mapper
+     * @param \ZfbUser\Repository\UserRepositoryInterface $repository
+     */
+    public function __construct(ModuleOptionsInterface $moduleOptions, UserMapperInterface $mapper, UserRepositoryInterface $repository)
+    {
+        parent::__construct($moduleOptions, $mapper, $repository);
+
+        $this->bcrypt = new Bcrypt();
+        $this->bcrypt->setCost($this->getModuleOptions()->getPasswordCost());
+    }
+
     /**
      * @inheritdoc
      */
@@ -28,18 +52,16 @@ class DbAdapter extends AbstractAdapter
             if ($this->getModuleOptions()->isEnableIdentityConfirmation() && $user->isIdentityConfirmed() !== true) {
                 $code = AuthenticationResult::FAILURE_IDENTITY_NOT_CONFIRMED;
             } else {
-                $bCrypt = new Bcrypt();
-                $bCrypt->setCost($this->getModuleOptions()->getPasswordCost());
-                if (!$bCrypt->verify($this->getCredential(), $user->getCredential())) {
+                if (!$this->verifyCredential($this->getCredential(), $user->getCredential())) {
                     $code = AuthenticationResult::FAILURE_CREDENTIAL_INVALID;
                 }
 
                 // Update user password hash if the cost parameter has changed
-                $this->updateUserPasswordHash($user, $this->getCredential(), $bCrypt);
+                $this->updateUserPasswordHash($user, $this->getCredential());
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $code ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$code]];
         $result = new AuthenticationResult($code, $user, $messages);
 
         return $result;
@@ -50,24 +72,28 @@ class DbAdapter extends AbstractAdapter
      */
     public function cryptCredential(string $credential): string
     {
-        $bcrypt = new Bcrypt();
-        $bcrypt->setCost($this->getModuleOptions()->getPasswordCost());
+        return $this->bcrypt->create($credential);
+    }
 
-        return $bcrypt->create($credential);
+    /**
+     * @inheritdoc
+     */
+    public function verifyCredential(string $credential, string $hash): bool
+    {
+        return $this->bcrypt->verify($credential, $hash);
     }
 
     /**
      * @param \ZfbUser\Entity\UserInterface $user
      * @param string                        $password
-     * @param \Zend\Crypt\Password\Bcrypt   $bCrypt
      *
      * @return \ZfbUser\Entity\UserInterface
      */
-    protected function updateUserPasswordHash(UserInterface $user, string $password, Bcrypt $bCrypt): UserInterface
+    protected function updateUserPasswordHash(UserInterface $user, string $password): UserInterface
     {
         $hash = explode('$', $user->getCredential());
-        if ($hash[2] !== $bCrypt->getCost()) {
-            $user->setCredential($bCrypt->create($password));
+        if ($hash[2] !== $this->bcrypt->getCost()) {
+            $user->setCredential($this->bcrypt->create($password));
             $this->getMapper()->update($user);
         }
 

@@ -22,10 +22,10 @@ interface TokenRepositoryInterface
     public function getToken(UserInterface $user, string $value, string $type): ?TokenInterface;
 
     /**
-     * @param null|\ZfbUser\Entity\UserInterface $user
-     * @param null|string                        $type
+     * @param \ZfbUser\Entity\UserInterface $user
+     * @param string                        $type
      *
      * @return array
      */
-    public function getActualTokens(?UserInterface $user, ?string $type): array;
+    public function getActualTokens(UserInterface $user, string $type): array;
 }

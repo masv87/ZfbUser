@@ -57,9 +57,9 @@ class TokenRepository extends EntityRepository implements TokenRepositoryInterfa
      * @param null|\ZfbUser\Entity\UserInterface $user
      * @param null|string                        $type
      *
-     * @return TokenInterface[]
+     * @return array
      */
-    public function getActualTokens(?UserInterface $user, ?string $type): array
+    public function getActualTokens(UserInterface $user, string $type): array
     {
         $now = new \DateTime();
 
@@ -67,16 +67,9 @@ class TokenRepository extends EntityRepository implements TokenRepositoryInterfa
             ->select('t')
             ->where('t.revoked = :revoked')->setParameter('revoked', false)
             ->andWhere('t.expiredAt > :expiredAt')->setParameter('expiredAt', $now)
+            ->andWhere('t.user = :user')->setParameter('user', $user)
+            ->andWhere('t.type = :type')->setParameter('type', $type)
             ->orderBy('t.id', 'ASC');
-
-        if ($user !== null) {
-            $qb->andWhere('t.user = :user')->setParameter('user', $user);
-        }
-
-        if ($type !== null) {
-            $qb->andWhere('t.type = :type')->setParameter('type', $type);
-        }
-
 
         /** @var TokenInterface[] $tokens */
         $tokens = $qb->getQuery()->getResult();

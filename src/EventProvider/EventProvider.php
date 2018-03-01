@@ -2,9 +2,11 @@
 
 namespace ZfbUser\EventProvider;
 
+use Zend\EventManager\Event;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
+use ZfbUser\Service\Exception;
 
 /**
  * Class EventProvider
@@ -42,5 +44,30 @@ abstract class EventProvider implements EventManagerAwareInterface
         }
 
         return $this->events;
+    }
+
+    /**
+     * @param \Zend\EventManager\Event $event
+     *
+     * @throws \ZfbUser\Service\Exception\EventResultException
+     */
+    protected function trigger(Event $event): void
+    {
+        $callback = function ($result) {
+            return ($result instanceof EventResultInterface && $result->hasError() === true);
+        };
+
+        $results = $this->getEventManager()->triggerEventUntil($callback, $event);
+
+        if ($results->stopped()) {
+            $last = $results->last();
+            if (!$last instanceof EventResultInterface) {
+                throw new Exception\EventResultException();
+            }
+
+            if ($last->hasError()) {
+                throw new Exception\EventResultException($last->getErrorMessage());
+            }
+        }
     }
 }

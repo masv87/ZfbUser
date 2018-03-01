@@ -51,8 +51,7 @@ class UserService extends EventProvider
         ModuleOptionsInterface $moduleOptions,
         MailSenderInterface $mailSender,
         TokenService $tokenService
-    )
-    {
+    ) {
         $this->authAdapter = $authAdapter;
         $this->moduleOptions = $moduleOptions;
         $this->mailSender = $mailSender;
@@ -154,27 +153,25 @@ class UserService extends EventProvider
         $mapper->beginTransaction();
 
         try {
-            $results = $this->getEventManager()->triggerUntil(function ($result) {
-                return ($result instanceof EventResultInterface && $result->hasError() === true);
-            }, __FUNCTION__ . '.beginTransaction', $this, ['user' => $user, 'data' => $data]);
-            if ($results->stopped()) {
-                $last = $results->last();
-                if (!$last instanceof EventResultInterface) {
-                    throw new Exception\EventResultException();
-                }
-
-                if ($last->hasError()) {
-                    throw new EventResultException($last->getErrorMessage());
-                }
-            }
+            $eventPre = new Event\AddUserEvent(Event\AddUserEvent::EVENT_PRE, $this);
+            $eventPre->setUser($user)->setFormData($data);
+            $this->trigger($eventPre);
 
             $user = $mapper->insert($user);
 
             $this->sendSetPasswordCode($user);
 
             $mapper->commit();
+
+            $eventPost = new Event\AddUserEvent(Event\AddUserEvent::EVENT_POST, $this);
+            $eventPost->setUser($user)->setFormData($data);
+            $this->trigger($eventPost);
         } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException | Exception\EventResultException$ex) {
             $mapper->rollback();
+
+            $eventError = new Event\AddUserEvent(Event\AddUserEvent::EVENT_ERROR, $this);
+            $eventError->setUser($user)->setFormData($data);
+            $this->trigger($eventError);
 
             throw $ex;
         }
@@ -215,7 +212,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -252,7 +249,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -289,7 +286,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -325,7 +322,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -417,7 +414,7 @@ class UserService extends EventProvider
     protected function buildUrl(string $uri, array $data): string
     {
         $url = $this->moduleOptions->getBaseUrl();
-        if ($url[strlen($url) - 1] !== '/') {
+        if ($url[ strlen($url) - 1 ] !== '/') {
             $url .= '/';
         }
         $url .= $uri . '?';

@@ -30,9 +30,8 @@ class MailSenderTransportFactory implements FactoryInterface
             'path'     => 'data/mail/',
             'callback' => function (FileTransport $transport) {
                 return sprintf(
-                    'msg_%f_%s.txt',
-                    microtime(true),
-                    Rand::getString(8)
+                    'msg_%s.txt',
+                    date('Y_m_d_H_i_s')
                 );
             },
         ]);

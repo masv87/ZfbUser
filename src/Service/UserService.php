@@ -3,17 +3,20 @@
 namespace ZfbUser\Service;
 
 use Zend\Hydrator\ClassMethods as ClassMethodsHydrator;
+use ZfbUser\EventProvider\EventProvider;
 use ZfbUser\Adapter\AdapterInterface;
 use ZfbUser\Entity\UserInterface;
+use ZfbUser\EventProvider\EventResultInterface;
 use ZfbUser\Options\ModuleOptionsInterface;
 use ZfbUser\AuthenticationResult;
+use ZfbUser\Service\Exception\EventResultException;
 
 /**
  * Class UserService
  *
  * @package ZfbUser\Service
  */
-class UserService
+class UserService extends EventProvider
 {
     /**
      * @var AdapterInterface
@@ -126,6 +129,7 @@ class UserService
      *
      * @return \ZfbUser\Entity\UserInterface
      * @throws \ReflectionException
+     * @throws \ZfbUser\Service\Exception\EventResultException
      * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      * @throws \ZfbUser\Service\Exception\UserExistsException
@@ -150,12 +154,26 @@ class UserService
         $mapper->beginTransaction();
 
         try {
+            $results = $this->getEventManager()->triggerUntil(function ($result) {
+                return ($result instanceof EventResultInterface && $result->hasError() === true);
+            }, __FUNCTION__ . '.beginTransaction', $this, ['user' => $user, 'data' => $data]);
+            if ($results->stopped()) {
+                $last = $results->last();
+                if (!$last instanceof EventResultInterface) {
+                    throw new Exception\EventResultException();
+                }
+
+                if ($last->hasError()) {
+                    throw new EventResultException($last->getErrorMessage());
+                }
+            }
+
             $user = $mapper->insert($user);
 
             $this->sendSetPasswordCode($user);
 
             $mapper->commit();
-        } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException $ex) {
+        } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException | Exception\EventResultException$ex) {
             $mapper->rollback();
 
             throw $ex;

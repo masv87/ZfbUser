@@ -17,6 +17,16 @@ class SetPasswordFormOptions extends FormOptions implements SetPasswordFormOptio
     /**
      * @var string
      */
+    protected $identityFieldLabel = 'E-mail';
+
+    /**
+     * @var string
+     */
+    protected $identityFieldName = 'email';
+
+    /**
+     * @var string
+     */
     protected $credentialFieldLabel = 'Password';
 
     /**
@@ -33,6 +43,46 @@ class SetPasswordFormOptions extends FormOptions implements SetPasswordFormOptio
      * @var string
      */
     protected $credentialVerifyFieldName = 'password_verify';
+
+    /**
+     * @return string
+     */
+    public function getIdentityFieldLabel(): string
+    {
+        return $this->identityFieldLabel;
+    }
+
+    /**
+     * @param string $identityFieldLabel
+     *
+     * @return SetPasswordFormOptions
+     */
+    public function setIdentityFieldLabel(string $identityFieldLabel): SetPasswordFormOptions
+    {
+        $this->identityFieldLabel = $identityFieldLabel;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentityFieldName(): string
+    {
+        return $this->identityFieldName;
+    }
+
+    /**
+     * @param string $identityFieldName
+     *
+     * @return SetPasswordFormOptions
+     */
+    public function setIdentityFieldName(string $identityFieldName): SetPasswordFormOptions
+    {
+        $this->identityFieldName = $identityFieldName;
+
+        return $this;
+    }
 
     /**
      * @return string

@@ -7,7 +7,6 @@ use Zend\Form\Form;
 use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use ZfbUser\AuthenticationResult;
 use ZfbUser\Options\ModuleOptionsInterface;
 use ZfbUser\Service\Exception\UserExistsException;
 use ZfbUser\Service\UserService;
@@ -64,6 +63,7 @@ class NewUserController extends AbstractActionController
     /**
      * @return array|\Zend\Http\Response|\Zend\View\Model\ViewModel
      * @throws \ReflectionException
+     * @throws \ZfbUser\Service\Exception\EventResultException
      * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
      * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
      */
@@ -127,6 +127,8 @@ class NewUserController extends AbstractActionController
             'authResult' => null,
         ]);
 
+        $identityFieldName = $this->moduleOptions->getSetPasswordFormOptions()->getIdentityFieldName();
+
         if (!$request->isPost()) {
             $identity = $this->params()->fromQuery('identity', null);
             $code = $this->params()->fromQuery('code', null);
@@ -134,7 +136,7 @@ class NewUserController extends AbstractActionController
                 return $this->redirect()->toRoute('zfbuser/authentication');
             }
 
-            $this->setPasswordForm->get('identity')->setValue($identity);
+            $this->setPasswordForm->get($identityFieldName)->setValue($identity);
             $this->setPasswordForm->get('code')->setValue($code);
             $viewModel->setVariable('identity', $identity);
 
@@ -149,7 +151,7 @@ class NewUserController extends AbstractActionController
         $data = $this->setPasswordForm->getData();
         $credentialFieldName = $this->moduleOptions->getSetPasswordFormOptions()->getCredentialFieldName();
         $newPassword = $data[$credentialFieldName];
-        $identity = $data['identity'];
+        $identity = $data[$identityFieldName];
         $code = $data['code'];
         $result = $this->userService->setPassword($identity, $code, $newPassword);
 

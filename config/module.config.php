@@ -120,6 +120,8 @@ return [
         ],
         'set_password_form'     => [
             'form_name'                     => 'setPasswordForm',
+            'identity_field_label'          => 'E-mail',
+            'identity_field_name'           => 'identity',
             'credential_field_label'        => 'Password',
             'credential_field_name'         => 'credential',
             'credential_verify_field_label' => 'Password Verify',

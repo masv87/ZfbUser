@@ -56,7 +56,7 @@ class SetPasswordForm extends Form
     protected function addElements(): self
     {
         $this->add([
-            'name'       => 'identity',
+            'name'       => 'code',
             'attributes' => [
                 'type'     => 'hidden',
                 'required' => true,
@@ -64,10 +64,15 @@ class SetPasswordForm extends Form
         ]);
 
         $this->add([
-            'name'       => 'code',
+            'name'       => $this->getFormOptions()->getIdentityFieldName(),
+            'options'    => [
+                'label' => $this->getFormOptions()->getIdentityFieldLabel(),
+            ],
             'attributes' => [
-                'type'     => 'hidden',
+                'type'     => 'email',
+                'readonly' => 'readonly',
                 'required' => true,
+                'class'    => 'identity',
             ],
         ]);
 

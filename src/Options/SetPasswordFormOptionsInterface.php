@@ -12,6 +12,16 @@ interface SetPasswordFormOptionsInterface extends FormOptionsInterface
     /**
      * @return string
      */
+    public function getIdentityFieldLabel(): string;
+
+    /**
+     * @return string
+     */
+    public function getIdentityFieldName(): string;
+
+    /**
+     * @return string
+     */
     public function getCredentialFieldLabel(): string;
 
     /**

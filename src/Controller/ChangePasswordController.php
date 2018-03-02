@@ -67,10 +67,14 @@ class ChangePasswordController extends AbstractActionController
             'form' => $this->changePasswordForm,
         ]);
 
+        /** @var \Zend\Http\PhpEnvironment\Request $request */
+        $request = $this->getRequest();
+        $url = $request->getRequestUri();
+        $this->changePasswordForm->setAttribute('action', $url);
         $this->changePasswordForm->get('identity')->setValue($user->getIdentity());
 
         // Pass in the route/url you want to redirect to after the POST
-        $prg = $this->prg($this->url()->fromRoute('zfbuser/change-password'), true);
+        $prg = $this->prg($url, true);
         if ($prg instanceof \Zend\Http\PhpEnvironment\Response) {
             // Returned a response to redirect us.
             return $prg;

@@ -14,7 +14,6 @@ if ($error === true) {
 
 $form = $this->form;
 $form->prepare();
-$form->setAttribute('action', $this->url('zfbuser/registration'));
 $form->setAttribute('method', 'POST');
 
 echo $this->form()->openTag($form);

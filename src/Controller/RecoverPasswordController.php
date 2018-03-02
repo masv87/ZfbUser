@@ -79,8 +79,13 @@ class RecoverPasswordController extends AbstractActionController
             'form'             => $this->recoverPasswordForm,
         ]);
 
+        /** @var \Zend\Http\PhpEnvironment\Request $request */
+        $request = $this->getRequest();
+        $url = $request->getRequestUri();
+        $this->recoverPasswordForm->setAttribute('action', $url);
+
         // Pass in the route/url you want to redirect to after the POST
-        $prg = $this->prg($this->url()->fromRoute('zfbuser/recover-password'), true);
+        $prg = $this->prg($url, true);
         if ($prg instanceof \Zend\Http\PhpEnvironment\Response) {
             // Returned a response to redirect us.
             return $prg;

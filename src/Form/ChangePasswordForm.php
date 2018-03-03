@@ -3,9 +3,11 @@
 namespace ZfbUser\Form;
 
 use Zend\Captcha\ReCaptcha;
+use Zend\Filter;
 use Zend\Form\Element;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
+use Zend\Validator;
 use ZfbUser\Options\ChangePasswordFormOptionsInterface;
 use ZfbUser\Options\ReCaptchaOptionsInterface;
 
@@ -32,8 +34,10 @@ class ChangePasswordForm extends Form
      * @param \ZfbUser\Options\ChangePasswordFormOptionsInterface $options
      * @param \ZfbUser\Options\ReCaptchaOptionsInterface          $recaptchaOptions
      */
-    public function __construct(ChangePasswordFormOptionsInterface $options, ReCaptchaOptionsInterface $recaptchaOptions)
-    {
+    public function __construct(
+        ChangePasswordFormOptionsInterface $options,
+        ReCaptchaOptionsInterface $recaptchaOptions
+    ) {
         $this->formOptions = $options;
         $this->recaptchaOptions = $recaptchaOptions;
 
@@ -56,8 +60,8 @@ class ChangePasswordForm extends Form
     protected function addElements(): self
     {
         $this->add([
+            'type'       => Element\Password::class,
             'name'       => $this->getFormOptions()->getCredentialOldFieldName(),
-            'type'       => 'password',
             'options'    => [
                 'label' => $this->getFormOptions()->getCredentialOldFieldLabel(),
             ],
@@ -69,8 +73,8 @@ class ChangePasswordForm extends Form
         ]);
 
         $this->add([
+            'type'       => Element\Password::class,
             'name'       => $this->getFormOptions()->getCredentialFieldName(),
-            'type'       => 'password',
             'options'    => [
                 'label' => $this->getFormOptions()->getCredentialFieldLabel(),
             ],
@@ -82,8 +86,8 @@ class ChangePasswordForm extends Form
         ]);
 
         $this->add([
+            'type'       => Element\Password::class,
             'name'       => $this->getFormOptions()->getCredentialVerifyFieldName(),
-            'type'       => 'password',
             'options'    => [
                 'label' => $this->getFormOptions()->getCredentialVerifyFieldLabel(),
             ],
@@ -97,8 +101,8 @@ class ChangePasswordForm extends Form
         if ($this->formOptions->isEnabledRecaptcha()) {
             $reCaptcha = new ReCaptcha($this->recaptchaOptions->toArray());
             $this->add([
+                'type'    => Element\Captcha::class,
                 'name'    => 'captcha',
-                'type'    => 'captcha',
                 'options' => [
                     'captcha' => $reCaptcha,
                 ],
@@ -109,7 +113,7 @@ class ChangePasswordForm extends Form
         $submitElement
             ->setLabel($this->getFormOptions()->getSubmitButtonText())
             ->setAttributes([
-                'type'  => 'submit',
+                'type'  => Element\Submit::class,
                 'class' => 'submit',
             ]);
 
@@ -133,16 +137,20 @@ class ChangePasswordForm extends Form
         $this->setInputFilter($inputFilter);
 
         $inputFilter->add([
-            'name'       => $this->getFormOptions()->getCredentialOldFieldName(),
-            'required'   => true,
-            'filters'    => [['name' => 'StringTrim']],
-            'validators' => [
+            'name'     => $this->getFormOptions()->getCredentialOldFieldName(),
+            'required' => true,
+            'filters'  => [
                 [
-                    'name'    => 'StringLength',
-                    'options' => [
-                        'min' => 6,
-                        'max' => 18,
-                    ],
+                    'name' => Filter\StripTags::class,
+                ],
+                [
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
                 ],
             ],
         ]);
@@ -150,10 +158,23 @@ class ChangePasswordForm extends Form
         $inputFilter->add([
             'name'       => $this->getFormOptions()->getCredentialFieldName(),
             'required'   => true,
-            'filters'    => [['name' => 'StringTrim']],
+            'filters'    => [
+                [
+                    'name' => Filter\StripTags::class,
+                ],
+                [
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
+                ],
+            ],
             'validators' => [
                 [
-                    'name'    => 'StringLength',
+                    'name'    => Validator\StringLength::class,
                     'options' => [
                         'min' => 6,
                         'max' => 18,
@@ -165,17 +186,23 @@ class ChangePasswordForm extends Form
         $inputFilter->add([
             'name'       => $this->getFormOptions()->getCredentialVerifyFieldName(),
             'required'   => true,
-            'filters'    => [['name' => 'StringTrim']],
-            'validators' => [
+            'filters'    => [
                 [
-                    'name'    => 'StringLength',
-                    'options' => [
-                        'min' => 6,
-                        'max' => 18,
-                    ],
+                    'name' => Filter\StripTags::class,
                 ],
                 [
-                    'name'    => 'Identical',
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
+                ],
+            ],
+            'validators' => [
+                [
+                    'name'    => Validator\Identical::class,
                     'options' => [
                         'token' => $this->getFormOptions()->getCredentialFieldName(),
                     ],

@@ -3,11 +3,13 @@
 namespace ZfbUser\Form;
 
 use Zend\Captcha\ReCaptcha;
+use Zend\Filter;
 use Zend\Form\Element;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
-use ZfbUser\Options\ResetPasswordFormOptionsInterface;
+use Zend\Validator;
 use ZfbUser\Options\ReCaptchaOptionsInterface;
+use ZfbUser\Options\ResetPasswordFormOptionsInterface;
 
 /**
  * Class ResetPasswordForm
@@ -35,8 +37,7 @@ class ResetPasswordForm extends Form
     public function __construct(
         ResetPasswordFormOptionsInterface $options,
         ReCaptchaOptionsInterface $recaptchaOptions
-    )
-    {
+    ) {
         $this->formOptions = $options;
         $this->recaptchaOptions = $recaptchaOptions;
 
@@ -59,6 +60,7 @@ class ResetPasswordForm extends Form
     protected function addElements(): self
     {
         $this->add([
+            'type'       => Element\Hidden::class,
             'name'       => 'identity',
             'attributes' => [
                 'type'     => 'hidden',
@@ -67,6 +69,7 @@ class ResetPasswordForm extends Form
         ]);
 
         $this->add([
+            'type'       => Element\Hidden::class,
             'name'       => 'code',
             'attributes' => [
                 'type'     => 'hidden',
@@ -75,8 +78,8 @@ class ResetPasswordForm extends Form
         ]);
 
         $this->add([
+            'type'       => Element\Password::class,
             'name'       => $this->getFormOptions()->getCredentialFieldName(),
-            'type'       => 'password',
             'options'    => [
                 'label' => $this->getFormOptions()->getCredentialFieldLabel(),
             ],
@@ -88,8 +91,8 @@ class ResetPasswordForm extends Form
         ]);
 
         $this->add([
+            'type'       => Element\Password::class,
             'name'       => $this->getFormOptions()->getCredentialVerifyFieldName(),
-            'type'       => 'password',
             'options'    => [
                 'label' => $this->getFormOptions()->getCredentialVerifyFieldLabel(),
             ],
@@ -103,8 +106,8 @@ class ResetPasswordForm extends Form
         if ($this->formOptions->isEnabledRecaptcha()) {
             $reCaptcha = new ReCaptcha($this->recaptchaOptions->toArray());
             $this->add([
+                'type'    => Element\Captcha::class,
                 'name'    => 'captcha',
-                'type'    => 'captcha',
                 'options' => [
                     'captcha' => $reCaptcha,
                 ],
@@ -115,7 +118,7 @@ class ResetPasswordForm extends Form
         $submitElement
             ->setLabel($this->getFormOptions()->getSubmitButtonText())
             ->setAttributes([
-                'type'  => 'submit',
+                'type'  => Element\Submit::class,
                 'class' => 'submit',
             ]);
 
@@ -141,10 +144,23 @@ class ResetPasswordForm extends Form
         $inputFilter->add([
             'name'       => $this->getFormOptions()->getCredentialFieldName(),
             'required'   => true,
-            'filters'    => [['name' => 'StringTrim']],
+            'filters'    => [
+                [
+                    'name' => Filter\StripTags::class,
+                ],
+                [
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
+                ],
+            ],
             'validators' => [
                 [
-                    'name'    => 'StringLength',
+                    'name'    => Validator\StringLength::class,
                     'options' => [
                         'min' => 6,
                         'max' => 18,
@@ -156,17 +172,23 @@ class ResetPasswordForm extends Form
         $inputFilter->add([
             'name'       => $this->getFormOptions()->getCredentialVerifyFieldName(),
             'required'   => true,
-            'filters'    => [['name' => 'StringTrim']],
-            'validators' => [
+            'filters'    => [
                 [
-                    'name'    => 'StringLength',
-                    'options' => [
-                        'min' => 6,
-                        'max' => 18,
-                    ],
+                    'name' => Filter\StripTags::class,
                 ],
                 [
-                    'name'    => 'Identical',
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
+                ],
+            ],
+            'validators' => [
+                [
+                    'name'    => Validator\Identical::class,
                     'options' => [
                         'token' => $this->getFormOptions()->getCredentialFieldName(),
                     ],

@@ -3,9 +3,11 @@
 namespace ZfbUser\Form;
 
 use Zend\Captcha\ReCaptcha;
+use Zend\Filter;
 use Zend\Form\Element;
 use Zend\Form\Form;
 use Zend\InputFilter\InputFilter;
+use Zend\Validator;
 use ZfbUser\Options\AuthenticationFormOptionsInterface;
 use ZfbUser\Options\ReCaptchaOptionsInterface;
 
@@ -58,6 +60,7 @@ class AuthenticationForm extends Form
     protected function addElements(): self
     {
         $this->add([
+            'type'       => Element\Email::class,
             'name'       => $this->getFormOptions()->getIdentityFieldName(),
             'options'    => [
                 'label' => $this->getFormOptions()->getIdentityFieldLabel(),
@@ -70,8 +73,8 @@ class AuthenticationForm extends Form
         ]);
 
         $this->add([
+            'type'       => Element\Password::class,
             'name'       => $this->getFormOptions()->getCredentialFieldName(),
-            'type'       => 'password',
             'options'    => [
                 'label' => $this->getFormOptions()->getCredentialFieldLabel(),
             ],
@@ -85,8 +88,8 @@ class AuthenticationForm extends Form
         if ($this->formOptions->isEnabledRecaptcha()) {
             $reCaptcha = new ReCaptcha($this->recaptchaOptions->toArray());
             $this->add([
+                'type'    => Element\Captcha::class,
                 'name'    => 'captcha',
-                'type'    => 'captcha',
                 'options' => [
                     'captcha' => $reCaptcha,
                 ],
@@ -97,7 +100,7 @@ class AuthenticationForm extends Form
         $submitElement
             ->setLabel($this->getFormOptions()->getSubmitButtonText())
             ->setAttributes([
-                'type'  => 'submit',
+                'type'  => Element\Submit::class,
                 'class' => 'submit',
             ]);
 
@@ -123,9 +126,23 @@ class AuthenticationForm extends Form
         $inputFilter->add([
             'name'       => $this->getFormOptions()->getIdentityFieldName(),
             'required'   => true,
+            'filters'    => [
+                [
+                    'name' => Filter\StripTags::class,
+                ],
+                [
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
+                ],
+            ],
             'validators' => [
                 [
-                    'name' => 'EmailAddress',
+                    'name' => Validator\EmailAddress::class,
                 ],
             ],
         ]);
@@ -133,7 +150,20 @@ class AuthenticationForm extends Form
         $inputFilter->add([
             'name'     => $this->getFormOptions()->getCredentialFieldName(),
             'required' => true,
-            'filters'  => [['name' => 'StringTrim']],
+            'filters'  => [
+                [
+                    'name' => Filter\StripTags::class,
+                ],
+                [
+                    'name' => Filter\StripNewlines::class,
+                ],
+                [
+                    'name' => Filter\StringTrim::class,
+                ],
+                [
+                    'name' => Filter\ToNull::class,
+                ],
+            ],
         ]);
 
         return $this;

@@ -44,8 +44,11 @@ class ChangePasswordController extends AbstractActionController
      * @param \ZfbUser\Service\UserService            $userService
      * @param \ZfbUser\Options\ModuleOptionsInterface $moduleOptions
      */
-    public function __construct(Form $changePasswordForm, UserService $userService, ModuleOptionsInterface $moduleOptions)
-    {
+    public function __construct(
+        Form $changePasswordForm,
+        UserService $userService,
+        ModuleOptionsInterface $moduleOptions
+    ) {
         $this->changePasswordForm = $changePasswordForm;
         $this->userService = $userService;
         $this->moduleOptions = $moduleOptions;
@@ -63,15 +66,15 @@ class ChangePasswordController extends AbstractActionController
         $user = $this->zfbAuthentication()->getIdentity();
 
         $viewModel = new ViewModel([
-            'user' => $user,
-            'form' => $this->changePasswordForm,
+            'authResult' => null,
+            'user'       => $user,
+            'form'       => $this->changePasswordForm,
         ]);
 
         /** @var \Zend\Http\PhpEnvironment\Request $request */
         $request = $this->getRequest();
         $url = $request->getRequestUri();
         $this->changePasswordForm->setAttribute('action', $url);
-        $this->changePasswordForm->get('identity')->setValue($user->getIdentity());
 
         // Pass in the route/url you want to redirect to after the POST
         $prg = $this->prg($url, true);
@@ -94,9 +97,9 @@ class ChangePasswordController extends AbstractActionController
         $data = $this->changePasswordForm->getData();
         $credentialOldFieldName = $this->moduleOptions->getChangePasswordFormOptions()->getCredentialOldFieldName();
         $credentialFieldName = $this->moduleOptions->getChangePasswordFormOptions()->getCredentialFieldName();
-        $identity = $data['identity'];
-        $oldPassword = $data[$credentialOldFieldName];
-        $newPassword = $data[$credentialFieldName];
+        $identity = $user->getIdentity();
+        $oldPassword = $data[ $credentialOldFieldName ];
+        $newPassword = $data[ $credentialFieldName ];
 
         $result = $this->userService->changePassword($identity, $oldPassword, $newPassword);
 

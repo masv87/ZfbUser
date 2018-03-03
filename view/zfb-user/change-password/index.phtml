@@ -1,15 +1,16 @@
 <?php
 /**
- * @var Zend\Form\Form $form
+ * @var Zend\Form\Form                    $form
  * @var ZfbUser\AuthenticationResult|null $authResult
+ * @var \ZfbUser\Entity\UserInterface     $user
  */
 ?>
 <h1>ZfbUser::changePassword</h1>
 
-<?php if(isset($authResult) && $authResult->isValid()): ?>
-<p>Password successfully changed!</p>
+<?php if (isset($authResult) && $authResult->isValid()): ?>
+    <p>Password successfully changed!</p>
 <?php else: ?>
-    <?php if(isset($authResult) && !$authResult->isValid()): ?>
+    <?php if (isset($authResult) && !$authResult->isValid()): ?>
         <?php
         if (isset($authResult)) {
             if (!$authResult->isValid()) {

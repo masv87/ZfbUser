@@ -56,14 +56,6 @@ class ChangePasswordForm extends Form
     protected function addElements(): self
     {
         $this->add([
-            'name'       => 'identity',
-            'attributes' => [
-                'type'     => 'hidden',
-                'required' => true,
-            ],
-        ]);
-
-        $this->add([
             'name'       => $this->getFormOptions()->getCredentialOldFieldName(),
             'type'       => 'password',
             'options'    => [

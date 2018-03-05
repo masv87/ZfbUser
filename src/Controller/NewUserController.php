@@ -28,11 +28,6 @@ class NewUserController extends AbstractActionController
     private $newUserForm;
 
     /**
-     * @var Form
-     */
-    private $setPasswordForm;
-
-    /**
      * @var UserService
      */
     private $userService;
@@ -48,14 +43,12 @@ class NewUserController extends AbstractActionController
      * NewUserController constructor.
      *
      * @param \Zend\Form\Form                         $newUserForm
-     * @param \Zend\Form\Form                         $setPasswordForm
      * @param \ZfbUser\Service\UserService            $userService
      * @param \ZfbUser\Options\ModuleOptionsInterface $moduleOptions
      */
-    public function __construct(Form $newUserForm, Form $setPasswordForm, UserService $userService, ModuleOptionsInterface $moduleOptions)
+    public function __construct(Form $newUserForm, UserService $userService, ModuleOptionsInterface $moduleOptions)
     {
         $this->newUserForm = $newUserForm;
-        $this->setPasswordForm = $setPasswordForm;
         $this->userService = $userService;
         $this->moduleOptions = $moduleOptions;
     }
@@ -112,65 +105,5 @@ class NewUserController extends AbstractActionController
         }
 
         return $viewModel;
-    }
-
-    /**
-     * @return \Zend\Http\Response|\Zend\View\Model\ViewModel
-     */
-    public function setPasswordAction()
-    {
-        if ($this->zfbAuthentication()->hasIdentity()) {
-            return $this->redirect()->toRoute('zfbuser/authentication');
-        }
-
-        /** @var \Zend\Http\PhpEnvironment\Request $request */
-        $request = $this->getRequest();
-
-        $viewModel = new ViewModel([
-            'form'       => $this->setPasswordForm,
-            'identity'   => null,
-            'authResult' => null,
-        ]);
-
-        $identityFieldName = $this->moduleOptions->getSetPasswordFormOptions()->getIdentityFieldName();
-
-        if (!$request->isPost()) {
-            $identity = $this->params()->fromQuery('identity', null);
-            $code = $this->params()->fromQuery('code', null);
-            if (empty($identity) || empty($code)) {
-                return $this->redirect()->toRoute('zfbuser/authentication');
-            }
-
-            $this->setPasswordForm->get($identityFieldName)->setValue($identity);
-            $this->setPasswordForm->get('code')->setValue($code);
-            $viewModel->setVariable('identity', $identity);
-
-            return $viewModel;
-        }
-
-        $this->setPasswordForm->setData($request->getPost());
-        if (!$this->setPasswordForm->isValid()) {
-            return $viewModel;
-        }
-
-        $data = $this->setPasswordForm->getData();
-        $credentialFieldName = $this->moduleOptions->getSetPasswordFormOptions()->getCredentialFieldName();
-        $newPassword = $data[$credentialFieldName];
-        $identity = $data[$identityFieldName];
-        $code = $data['code'];
-        $result = $this->userService->setPassword($identity, $code, $newPassword);
-
-        if (!$result->isValid()) {
-            $viewModel->setVariable('authResult', $result);
-
-            return $viewModel;
-        }
-
-        $query = http_build_query([
-            'identity'        => $identity,
-            'passwordChanged' => 1,
-        ]);
-
-        return $this->redirect()->toRoute('zfbuser/authentication', [], ['query' => $query]);
     }
 }

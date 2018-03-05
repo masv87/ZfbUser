@@ -5,23 +5,23 @@ namespace ZfbUser\Controller\Factory;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\Form\Form;
-use ZfbUser\Controller\NewUserController;
+use ZfbUser\Controller\SetPasswordController;
 use ZfbUser\Options\ModuleOptions;
 use ZfbUser\Service\UserService;
 
 /**
- * Class NewUserControllerFactory
+ * Class SetPasswordControllerFactory
  *
  * @package ZfbUser\Controller\Factory
  */
-class NewUserControllerFactory implements FactoryInterface
+class SetPasswordControllerFactory implements FactoryInterface
 {
     /**
      * @param \Interop\Container\ContainerInterface $container
      * @param string                                $requestedName
      * @param array|null                            $options
      *
-     * @return object|\ZfbUser\Controller\NewUserController
+     * @return object|\ZfbUser\Controller\SetPasswordController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -31,11 +31,11 @@ class NewUserControllerFactory implements FactoryInterface
         $userService = $container->get(UserService::class);
 
         /** @var Form $form */
-        $newUserForm = $container->get('zfbuser_new_user_form');
+        $setPasswordForm = $container->get('zfbuser_set_password_form');
 
         /** @var ModuleOptions $moduleOptions */
         $moduleOptions = $container->get(ModuleOptions::class);
 
-        return new NewUserController($newUserForm, $userService, $moduleOptions);
+        return new SetPasswordController($setPasswordForm, $userService, $moduleOptions);
     }
 }

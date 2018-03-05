@@ -51,7 +51,8 @@ class UserService extends EventProvider
         ModuleOptionsInterface $moduleOptions,
         MailSenderInterface $mailSender,
         TokenService $tokenService
-    ) {
+    )
+    {
         $this->authAdapter = $authAdapter;
         $this->moduleOptions = $moduleOptions;
         $this->mailSender = $mailSender;
@@ -212,7 +213,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -249,7 +250,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -286,7 +287,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -322,7 +323,7 @@ class UserService extends EventProvider
             }
         }
 
-        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[ $resultCode ]];
+        $messages = [AuthenticationResult::MESSAGE_TEMPLATES[$resultCode]];
 
         return new AuthenticationResult($resultCode, $user, $messages);
     }
@@ -392,7 +393,7 @@ class UserService extends EventProvider
         // generate new token and revoke old set_password tokens
         $token = $this->tokenService->generateToken($user, TokenService::TYPE_SET_PASSWORD, true);
 
-        $url = $this->buildUrl('user/new-user/set-password', [
+        $url = $this->buildUrl('user/set-password', [
             'identity' => $user->getIdentity(),
             'code'     => $token->getValue(),
         ]);
@@ -414,7 +415,7 @@ class UserService extends EventProvider
     protected function buildUrl(string $uri, array $data): string
     {
         $url = $this->moduleOptions->getBaseUrl();
-        if ($url[ strlen($url) - 1 ] !== '/') {
+        if ($url[strlen($url) - 1] !== '/') {
             $url .= '/';
         }
         $url .= $uri . '?';

@@ -17,7 +17,7 @@
     <?php
     $form = $this->form;
     $form->prepare();
-    $form->setAttribute('action', $this->url('zfbuser/new-user', ['action' => 'set-password']));
+    $form->setAttribute('action', $this->url('zfbuser/set-password'));
     $form->setAttribute('method', 'POST');
 
     echo $this->form()->openTag($form);

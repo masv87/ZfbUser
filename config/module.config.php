@@ -241,6 +241,16 @@ return [
                             ],
                         ],
                     ],
+                    'set-password'         => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/set-password[/:action]',
+                            'defaults' => [
+                                'controller' => Controller\SetPasswordController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -260,6 +270,7 @@ return [
             Controller\RecoverPasswordController::class => Controller\Factory\RecoverPasswordControllerFactory::class,
             Controller\ChangePasswordController::class  => Controller\Factory\ChangePasswordControllerFactory::class,
             Controller\NewUserController::class         => Controller\Factory\NewUserControllerFactory::class,
+            Controller\SetPasswordController::class     => Controller\Factory\SetPasswordControllerFactory::class,
         ],
     ],
     // We register module-provided controller plugins under this key.

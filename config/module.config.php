@@ -161,6 +161,30 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes'  => [
+                    'api' => [
+                        'type'          => Literal::class,
+                        'priority'      => 1000,
+                        'options'       => [
+                            'route'    => '/api',
+                            'defaults' => [
+                                'controller' => Controller\UserController::class,
+                                'action'     => 'apiIndex',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes'  => [
+                            'new-user'         => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/new-user[/:action]',
+                                    'defaults' => [
+                                        'controller' => Controller\NewUserController::class,
+                                        'action'     => 'apiIndex',
+                                    ],
+                                ],
+                            ],
+                        ]
+                    ],
                     'authentication'   => [
                         'type'    => Literal::class,
                         'options' => [
@@ -259,6 +283,9 @@ return [
         'template_path_stack' => [
             __DIR__ . '/../view',
         ],
+        'strategies' => array(
+            'ViewJsonStrategy',
+        ),
     ],
     'controllers'        => [
         'factories' => [

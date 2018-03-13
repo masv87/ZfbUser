@@ -4,8 +4,11 @@ namespace ZfbUser\Service;
 
 use Zend\Mail\Message;
 use Zend\Mail\Transport\TransportInterface;
-use ZfbUser\Options\MailSenderOptionsInterface;
+use Zend\Mime\Message as MimeMessage;
+use Zend\Mime\Mime;
+use Zend\Mime\Part as MimePart;
 use ZfbUser\Entity\UserInterface;
+use ZfbUser\Options\MailSenderOptionsInterface;
 
 /**
  * Class MailSender
@@ -53,7 +56,15 @@ class MailSender implements MailSenderInterface
             $template = str_replace('%' . $k . '%', $v, $template);
         }
 
-        $mail->setBody($template);
+        $html = new MimePart($template);
+        $html->type = Mime::TYPE_HTML;
+        $html->charset = 'utf-8';
+        $html->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
+
+        $body = new MimeMessage();
+        $body->setParts([$html]);
+
+        $mail->setBody($body);
 
         $this->transport->send($mail);
     }

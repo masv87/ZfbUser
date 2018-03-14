@@ -59,7 +59,7 @@ class MailSender implements MailSenderInterface
         $html = new MimePart($template);
         $html->type = Mime::TYPE_HTML;
         $html->charset = 'utf-8';
-        $html->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
+        //$html->encoding = Mime::ENCODING_QUOTEDPRINTABLE;
 
         $body = new MimeMessage();
         $body->setParts([$html]);

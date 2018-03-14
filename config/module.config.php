@@ -352,9 +352,9 @@ return [
     'translator' => [
         'translation_file_patterns' => [
             [
-                'type'     => 'gettext',
+                'type'     => 'phpArray',
                 'base_dir' => __DIR__ . '/../language',
-                'pattern'  => '%s.mo',
+                'pattern'  => '%s.php',
             ],
         ],
     ],

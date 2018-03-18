@@ -163,6 +163,7 @@ return [
                 'child_routes'  => [
                     'api' => [
                         'type'          => Literal::class,
+                        'priority'      => 1000,
                         'options'       => [
                             'route'    => '/api',
                             'defaults' => [
@@ -189,6 +190,16 @@ return [
                                     'defaults' => [
                                         'controller' => Controller\LogoutController::class,
                                         'action'     => 'apiLogout',
+                                    ],
+                                ],
+                            ],
+                            'new-user'         => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/new-user[/:action]',
+                                    'defaults' => [
+                                        'controller' => Controller\NewUserController::class,
+                                        'action'     => 'apiIndex',
                                     ],
                                 ],
                             ],
@@ -292,6 +303,9 @@ return [
         'template_path_stack' => [
             __DIR__ . '/../view',
         ],
+        'strategies' => array(
+            'ViewJsonStrategy',
+        ),
     ],
     'controllers'        => [
         'factories' => [
@@ -358,9 +372,9 @@ return [
     'translator' => [
         'translation_file_patterns' => [
             [
-                'type'     => 'gettext',
+                'type'     => 'phpArray',
                 'base_dir' => __DIR__ . '/../language',
-                'pattern'  => '%s.mo',
+                'pattern'  => '%s.php',
             ],
         ],
     ],

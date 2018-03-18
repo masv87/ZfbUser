@@ -2,10 +2,12 @@
 
 namespace ZfbUser\Controller;
 
+use Zend\Http\PhpEnvironment\Request;
+use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Plugin\FlashMessenger\FlashMessenger;
 use Zend\Form\Form;
-use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 use ZfbUser\Options\ModuleOptionsInterface;
 use ZfbUser\Service\Exception\UserExistsException;
@@ -15,7 +17,7 @@ use ZfbUser\Service\UserService;
  * Class NewUserController
  *
  * @method Plugin\ZfbAuthentication zfbAuthentication()
- * @method Response|array prg(string $redirect = null, bool $redirectToUrl = false)
+ * @method \Zend\Http\Response|array prg(string $redirect = null, bool $redirectToUrl = false)
  * @method FlashMessenger flashMessenger()
  *
  * @package ZfbUser\Controller
@@ -105,5 +107,53 @@ class NewUserController extends AbstractActionController
         }
 
         return $viewModel;
+    }
+
+    /**
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\JsonModel
+     */
+    public function apiIndexAction()
+    {
+        /** @var Request $request */
+        $request = $this->getRequest();
+
+        /** @var Response $response */
+        $response = $this->getResponse();
+        if (!$request->isPost()) {
+            $response->setStatusCode(Response::STATUS_CODE_405);
+
+            return $response;
+        }
+
+        if (!$this->zfbAuthentication()->hasIdentity()) {
+            $response->setStatusCode(Response::STATUS_CODE_403);
+
+            return $response;
+        }
+
+        $jsonModel = new JsonModel(['success' => false]);
+
+        $post = $request->getPost();
+        $this->newUserForm->setData($post);
+        if (!$this->newUserForm->isValid()) {
+            $jsonModel->setVariable('formErrors', $this->newUserForm->getMessages());
+
+            return $jsonModel;
+        }
+        $data = $this->newUserForm->getData();
+
+        try {
+            $user = $this->userService->addUser($data);
+
+            //TODO: return saved data
+            $jsonModel->setVariable('user', $user);
+
+            $jsonModel->setVariable('success', true);
+        } catch (\Exception $ex) {
+            $jsonModel->setVariable('hasError', true);
+            $jsonModel->setVariable('message', $ex->getMessage());
+        }
+
+        return $jsonModel;
     }
 }

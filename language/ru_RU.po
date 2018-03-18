@@ -51,3 +51,6 @@ msgstr "Войти"
 
 msgid "Sign up"
 msgstr "Зарегистрироваться"
+
+msgid "Forgot password?"
+msgstr "Забыли пароль?"

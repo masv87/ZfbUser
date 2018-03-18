@@ -2,8 +2,10 @@
 
 namespace ZfbUser\Controller;
 
-use Zend\Http\Response;
+use Zend\Http\PhpEnvironment\Request;
+use Zend\Http\PhpEnvironment\Response;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 use ZfbUser\Adapter\AdapterInterface;
 use ZfbUser\AuthenticationResult;
@@ -14,7 +16,7 @@ use ZfbUser\Options\ModuleOptionsInterface;
  * Class AuthenticationController
  *
  * @method Plugin\ZfbAuthentication zfbAuthentication()
- * @method Response|array prg(string $redirect = null, bool $redirectToUrl = false)
+ * @method \Zend\Http\Response|array prg(string $redirect = null, bool $redirectToUrl = false)
  *
  * @package ZfbUser\Controller
  */
@@ -52,8 +54,7 @@ class AuthenticationController extends AbstractActionController
         AuthenticationForm $authenticationForm,
         AdapterInterface $authenticationAdapter,
         ModuleOptionsInterface $moduleOptions
-    )
-    {
+    ) {
         $this->authenticationForm = $authenticationForm;
         $this->authenticationAdapter = $authenticationAdapter;
         $this->moduleOptions = $moduleOptions;
@@ -121,8 +122,8 @@ class AuthenticationController extends AbstractActionController
         }
 
         $this->authenticationAdapter
-            ->setIdentity($data[$this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName()])
-            ->setCredential($data[$this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName()]);
+            ->setIdentity($data[ $this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName() ])
+            ->setCredential($data[ $this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName() ]);
 
         /** @var AuthenticationResult $authResult */
         $authResult = $this->zfbAuthentication()->getAuthService()->authenticate($this->authenticationAdapter);
@@ -150,5 +151,82 @@ class AuthenticationController extends AbstractActionController
         }
 
         return $this->redirect()->toRoute($this->moduleOptions->getAuthenticationCallbackRoute());
+    }
+
+    /**
+     * @return \Zend\Http\PhpEnvironment\Response|\Zend\View\Model\JsonModel
+     */
+    public function apiAuthenticationAction()
+    {
+        sleep(2);
+
+        /** @var Response $response */
+        $response = $this->getResponse();
+
+        /** @var Request $request */
+        $request = $this->getRequest();
+
+        if (!$request->isPost()) {
+            $response->setStatusCode(Response::STATUS_CODE_405);
+
+            return $response;
+        }
+
+        $jsonModel = new JsonModel([
+            'success' => false,
+        ]);
+
+        $this->authenticationForm->setData($request->getPost());
+        if (!$this->authenticationForm->isValid()) {
+            $formErrors = [];
+
+            /** @var \Zend\Form\Element $element */
+            foreach ($this->authenticationForm->getElements() as $element) {
+                $messages = $this->authenticationForm->getMessages($element->getName());
+                if (!empty($messages)) {
+                    $formErrors[ $element->getName() ] = $messages;
+                }
+            }
+
+            $jsonModel->setVariable('formErrors', $formErrors);
+
+            return $jsonModel;
+        }
+
+        $this->zfbAuthentication()->getAuthService()->clearIdentity();
+
+        $data = $this->authenticationForm->getData();
+        $this->authenticationAdapter
+            ->setIdentity($data[ $this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName() ])
+            ->setCredential($data[ $this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName() ]);
+
+        /** @var AuthenticationResult $authResult */
+        $authResult = $this->zfbAuthentication()->getAuthService()->authenticate($this->authenticationAdapter);
+
+        if (!$authResult->isValid()) {
+            if ($authResult->getCode() == AuthenticationResult::FAILURE_IDENTITY_NOT_CONFIRMED) {
+                $query = http_build_query([
+                    'identity' => $authResult->getIdentity()->getIdentity(),
+                ]);
+
+                $url = $this->url()->fromRoute('zfbuser/confirmation', ['action' => 'index'], ['query' => $query]);
+
+                $jsonModel->setVariable('identity_not_confirmed', true);
+                $jsonModel->setVariable('identity_confirmation_url', $url);
+
+                return $jsonModel;
+            }
+
+            $jsonModel->setVariable('errors', $authResult->getMessages());
+
+            return $jsonModel;
+        }
+
+        $url = $this->url()->fromRoute($this->moduleOptions->getAuthenticationCallbackRoute());
+
+        $jsonModel->setVariable('success', true);
+        $jsonModel->setVariable('authentication_callback_url', $url);
+
+        return $jsonModel;
     }
 }

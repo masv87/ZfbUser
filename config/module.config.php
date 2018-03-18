@@ -161,6 +161,39 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes'  => [
+                    'api' => [
+                        'type'          => Literal::class,
+                        'options'       => [
+                            'route'    => '/api',
+                            'defaults' => [
+                                'controller' => Controller\UserController::class,
+                                'action'     => 'apiIndex',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes'  => [
+                            'authentication'   => [
+                                'type'    => Literal::class,
+                                'options' => [
+                                    'route'    => '/authentication',
+                                    'defaults' => [
+                                        'controller' => Controller\AuthenticationController::class,
+                                        'action'     => 'apiAuthentication',
+                                    ],
+                                ],
+                            ],
+                            'logout'           => [
+                                'type'    => Literal::class,
+                                'options' => [
+                                    'route'    => '/logout',
+                                    'defaults' => [
+                                        'controller' => Controller\LogoutController::class,
+                                        'action'     => 'apiLogout',
+                                    ],
+                                ],
+                            ],
+                        ]
+                    ],
                     'authentication'   => [
                         'type'    => Literal::class,
                         'options' => [

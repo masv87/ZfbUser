@@ -206,7 +206,7 @@ return [
                             'new-user'         => [
                                 'type'    => Segment::class,
                                 'options' => [
-                                    'route'    => '/new-user[/:action]',
+                                    'route'    => '/new-user',
                                     'defaults' => [
                                         'controller' => Controller\NewUserController::class,
                                         'action'     => 'apiIndex',
@@ -288,7 +288,7 @@ return [
                     'new-user'         => [
                         'type'    => Segment::class,
                         'options' => [
-                            'route'    => '/new-user[/:action]',
+                            'route'    => '/new-user',
                             'defaults' => [
                                 'controller' => Controller\NewUserController::class,
                                 'action'     => 'index',

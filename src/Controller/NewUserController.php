@@ -145,10 +145,8 @@ class NewUserController extends AbstractActionController
         try {
             $user = $this->userService->addUser($data);
 
-            //TODO: return saved data
-            $jsonModel->setVariable('user', $user);
-
             $jsonModel->setVariable('success', true);
+            $jsonModel->setVariable('user', $user);
         } catch (\Exception $ex) {
             $jsonModel->setVariable('hasError', true);
             $jsonModel->setVariable('message', $ex->getMessage());

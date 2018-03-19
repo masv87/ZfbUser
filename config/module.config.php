@@ -173,6 +173,16 @@ return [
                         ],
                         'may_terminate' => true,
                         'child_routes'  => [
+                            'get'   => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/get/:identity',
+                                    'defaults' => [
+                                        'controller' => Controller\UserController::class,
+                                        'action'     => 'apiGet',
+                                    ],
+                                ],
+                            ],
                             'authentication'   => [
                                 'type'    => Literal::class,
                                 'options' => [

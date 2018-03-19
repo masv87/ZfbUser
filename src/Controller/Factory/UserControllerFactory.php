@@ -6,6 +6,7 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use ZfbUser\Controller\UserController;
 use ZfbUser\Options\ModuleOptions;
+use ZfbUser\Repository\UserRepositoryInterface;
 
 /**
  * Class UserControllerFactory
@@ -28,6 +29,9 @@ class UserControllerFactory implements FactoryInterface
         /** @var ModuleOptions $moduleOptions */
         $moduleOptions = $container->get(ModuleOptions::class);
 
-        return new UserController($moduleOptions);
+        /** @var UserRepositoryInterface $repository */
+        $repository = $container->get('zfbuser_user_repository');
+
+        return new UserController($moduleOptions, $repository);
     }
 }

@@ -24,4 +24,11 @@ interface UserMapperInterface extends MapperInterface
      * @return UserInterface
      */
     public function update(UserInterface $user): UserInterface;
+
+    /**
+     * @param UserInterface $user
+     *
+     * @return void
+     */
+    public function delete(UserInterface $user);
 }

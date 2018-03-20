@@ -49,6 +49,11 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     protected $newUserFormOptions;
 
     /**
+     * @var UpdateUserFormOptionsInterface
+     */
+    protected $updateUserFormOptions;
+
+    /**
      * @var SetPasswordFormOptionsInterface
      */
     protected $setPasswordFormOptions;
@@ -179,6 +184,13 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
             unset($options['new_user_form']);
         }
         $this->newUserFormOptions = new NewUserFormOptions($newUserFormOptions);
+
+        $updateUserFormOptions = [];
+        if (!empty($options['update_user_form'])) {
+            $updateUserFormOptions = $options['update_user_form'];
+            unset($options['update_user_form']);
+        }
+        $this->updateUserFormOptions = new UpdateUserFormOptions($updateUserFormOptions);
 
         $setPasswordFormOptions = [];
         if (!empty($options['set_password_form'])) {
@@ -330,6 +342,26 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     public function setNewUserFormOptions(NewUserFormOptionsInterface $newUserFormOptions): ModuleOptions
     {
         $this->newUserFormOptions = $newUserFormOptions;
+
+        return $this;
+    }
+
+    /**
+     * @return \ZfbUser\Options\UpdateUserFormOptionsInterface
+     */
+    public function getUpdateUserFormOptions(): UpdateUserFormOptionsInterface
+    {
+        return $this->updateUserFormOptions;
+    }
+
+    /**
+     * @param \ZfbUser\Options\UpdateUserFormOptionsInterface $updateUserFormOptions
+     *
+     * @return ModuleOptions
+     */
+    public function setUpdateUserFormOptions(UpdateUserFormOptionsInterface $updateUserFormOptions): ModuleOptions
+    {
+        $this->updateUserFormOptions = $updateUserFormOptions;
 
         return $this;
     }

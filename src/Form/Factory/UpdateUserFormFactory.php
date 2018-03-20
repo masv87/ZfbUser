@@ -1,27 +1,25 @@
 <?php
 
-namespace ZfbUser\Controller\Factory;
+namespace ZfbUser\Form\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use ZfbUser\Controller\UserController;
+use ZfbUser\Form\UpdateUserForm;
 use ZfbUser\Options\ModuleOptions;
-use ZfbUser\Repository\UserRepositoryInterface;
-use ZfbUser\Service\UserService;
 
 /**
- * Class UserControllerFactory
+ * Class UpdateUserFormFactory
  *
- * @package ZfbUser\Controller\Factory
+ * @package ZfbUser\Form\Factory
  */
-class UserControllerFactory implements FactoryInterface
+class UpdateUserFormFactory implements FactoryInterface
 {
     /**
      * @param \Interop\Container\ContainerInterface $container
      * @param string                                $requestedName
      * @param array|null                            $options
      *
-     * @return object|\ZfbUser\Controller\UserController
+     * @return object|\ZfbUser\Form\NewUserForm
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -29,13 +27,11 @@ class UserControllerFactory implements FactoryInterface
     {
         /** @var ModuleOptions $moduleOptions */
         $moduleOptions = $container->get(ModuleOptions::class);
+        $formOptions = $moduleOptions->getUpdateUserFormOptions();
+        $recaptchaOptions = $moduleOptions->getRecaptchaOptions();
 
-        /** @var UserService $userService */
-        $userService = $container->get(UserService::class);
+        $form = new UpdateUserForm($formOptions, $recaptchaOptions);
 
-        /** @var UserRepositoryInterface $repository */
-        $repository = $container->get('zfbuser_user_repository');
-
-        return new UserController($moduleOptions, $userService, $repository);
+        return $form;
     }
 }

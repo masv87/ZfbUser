@@ -17,4 +17,11 @@ interface UserRepositoryInterface
      * @return null|UserInterface
      */
     public function getUserByIdentity(string $identity): ?UserInterface;
+
+    /**
+     * @param int $id
+     *
+     * @return null|UserInterface
+     */
+    public function getUserById(int $id): ?UserInterface;
 }

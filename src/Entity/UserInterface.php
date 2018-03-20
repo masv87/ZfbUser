@@ -2,12 +2,14 @@
 
 namespace ZfbUser\Entity;
 
+use Zend\Stdlib\ArraySerializableInterface;
+
 /**
  * Interface UserInterface
  *
  * @package ZfbUser\Entity
  */
-interface UserInterface
+interface UserInterface extends ArraySerializableInterface, \JsonSerializable
 {
     /**
      * @return int

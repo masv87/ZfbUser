@@ -128,6 +128,7 @@ class UserService extends EventProvider
      * @param array $data
      *
      * @return \ZfbUser\Entity\UserInterface
+     * @throws \Exception
      * @throws \ReflectionException
      * @throws \ZfbUser\Service\Exception\EventResultException
      * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
@@ -175,9 +176,112 @@ class UserService extends EventProvider
             $this->trigger($eventError);
 
             throw $ex;
+        } catch (\Exception $ex) {
+            $mapper->rollback();
+
+            throw $ex;
         }
 
         return $user;
+    }
+
+    /**
+     * Update existing user
+     *
+     * @param \ZfbUser\Entity\UserInterface $user
+     * @param array                         $data
+     *
+     * @return \ZfbUser\Entity\UserInterface
+     * @throws \Exception
+     * @throws \ZfbUser\Service\Exception\EventResultException
+     * @throws \ZfbUser\Service\Exception\MailTemplateNotFoundException
+     * @throws \ZfbUser\Service\Exception\UnsupportedTokenTypeException
+     */
+    public function saveUser(UserInterface $user, array $data): UserInterface
+    {
+        $mapper = $this->getAuthAdapter()->getMapper();
+
+        try {
+            $eventPre = new Event\UpdateUserEvent(Event\UpdateUserEvent::EVENT_PRE, $this);
+            $eventPre->setUser($user)->setFormData($data);
+            $this->trigger($eventPre);
+
+            $identityFieldName = $this->moduleOptions->getUpdateUserFormOptions()->getIdentityFieldName();
+            if ($data[$identityFieldName] != $user->getIdentity()) {
+                $data['identityConfirmed'] = false;
+            }
+
+            $user->exchangeArray($data);
+
+            $mapper->beginTransaction();
+
+            $user = $mapper->insert($user);
+
+            if ($user->isIdentityConfirmed() !== true) {
+                $this->sendConfirmationCode($user);
+            }
+
+            $mapper->commit();
+
+            $eventPost = new Event\UpdateUserEvent(Event\UpdateUserEvent::EVENT_POST, $this);
+            $eventPost->setUser($user)->setFormData($data);
+            $this->trigger($eventPost);
+        } catch (Exception\MailTemplateNotFoundException | Exception\UnsupportedTokenTypeException | Exception\EventResultException$ex) {
+            $mapper->rollback();
+
+            $eventError = new Event\UpdateUserEvent(Event\UpdateUserEvent::EVENT_ERROR, $this);
+            $eventError->setUser($user)->setFormData($data);
+            $this->trigger($eventError);
+
+            throw $ex;
+        } catch (\Exception $ex) {
+            $mapper->rollback();
+
+            throw $ex;
+        }
+
+        return $user;
+    }
+
+    /**
+     * Delete user
+     *
+     * @param \ZfbUser\Entity\UserInterface $user
+     *
+     * @throws \Exception
+     * @throws \ZfbUser\Service\Exception\EventResultException
+     */
+    public function deleteUser(UserInterface $user)
+    {
+        $mapper = $this->getAuthAdapter()->getMapper();
+
+        try {
+            $eventPre = new Event\DeleteUserEvent(Event\DeleteUserEvent::EVENT_PRE, $this);
+            $eventPre->setUser($user);
+            $this->trigger($eventPre);
+
+            $mapper->beginTransaction();
+
+            $mapper->delete($user);
+
+            $mapper->commit();
+
+            $eventPost = new Event\DeleteUserEvent(Event\DeleteUserEvent::EVENT_POST, $this);
+            $eventPost->setUser($user);
+            $this->trigger($eventPost);
+        } catch (Exception\EventResultException$ex) {
+            $mapper->rollback();
+
+            $eventError = new Event\DeleteUserEvent(Event\DeleteUserEvent::EVENT_ERROR, $this);
+            $eventError->setUser($user);
+            $this->trigger($eventError);
+
+            throw $ex;
+        } catch (\Exception $ex) {
+            $mapper->rollback();
+
+            throw $ex;
+        }
     }
 
     /**

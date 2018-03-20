@@ -47,4 +47,19 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
 
         return $user;
     }
+
+    /**
+     * @param int $id
+     *
+     * @return null|\ZfbUser\Entity\UserInterface
+     */
+    public function getUserById(int $id): ?UserInterface
+    {
+        $idFieldName = 'id';
+
+        /** @var UserInterface|null $user */
+        $user = $this->findOneBy([$idFieldName => $id]);
+
+        return $user;
+    }
 }

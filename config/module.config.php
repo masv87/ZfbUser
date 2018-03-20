@@ -112,7 +112,17 @@ return [
             'form_name'            => 'addUserForm',
             'identity_field_label' => 'E-mail',
             'identity_field_name'  => 'identity',
-            'submit_button_text'   => 'Sign up',
+            'submit_button_text'   => 'Save',
+            'csrf_timeout'         => 60 * 5,
+
+            // required, включить капчу?
+            'enabled_recaptcha'    => false,
+        ],
+        'update_user_form'         => [
+            'form_name'            => 'updateUserForm',
+            'identity_field_label' => 'E-mail',
+            'identity_field_name'  => 'identity',
+            'submit_button_text'   => 'Update',
             'csrf_timeout'         => 60 * 5,
 
             // required, включить капчу?
@@ -176,10 +186,20 @@ return [
                             'get'   => [
                                 'type'    => Segment::class,
                                 'options' => [
-                                    'route'    => '/get/:identity',
+                                    'route'    => '/get/:id',
                                     'defaults' => [
                                         'controller' => Controller\UserController::class,
                                         'action'     => 'apiGet',
+                                    ],
+                                ],
+                            ],
+                            'delete'   => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/delete/:id',
+                                    'defaults' => [
+                                        'controller' => Controller\UserController::class,
+                                        'action'     => 'apiDelete',
                                     ],
                                 ],
                             ],
@@ -209,6 +229,16 @@ return [
                                     'route'    => '/new-user',
                                     'defaults' => [
                                         'controller' => Controller\NewUserController::class,
+                                        'action'     => 'apiIndex',
+                                    ],
+                                ],
+                            ],
+                            'update-user'         => [
+                                'type'    => Segment::class,
+                                'options' => [
+                                    'route'    => '/update-user/:id',
+                                    'defaults' => [
+                                        'controller' => Controller\UpdateUserController::class,
                                         'action'     => 'apiIndex',
                                     ],
                                 ],
@@ -295,6 +325,16 @@ return [
                             ],
                         ],
                     ],
+                    'update-user'         => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/update-user/:id',
+                            'defaults' => [
+                                'controller' => Controller\UpdateUserController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
+                    ],
                     'set-password'         => [
                         'type'    => Segment::class,
                         'options' => [
@@ -327,6 +367,7 @@ return [
             Controller\RecoverPasswordController::class => Controller\Factory\RecoverPasswordControllerFactory::class,
             Controller\ChangePasswordController::class  => Controller\Factory\ChangePasswordControllerFactory::class,
             Controller\NewUserController::class         => Controller\Factory\NewUserControllerFactory::class,
+            Controller\UpdateUserController::class      => Controller\Factory\UpdateUserControllerFactory::class,
             Controller\SetPasswordController::class     => Controller\Factory\SetPasswordControllerFactory::class,
         ],
     ],
@@ -359,6 +400,7 @@ return [
             'zfbuser_registration_form'      => Form\Factory\RegistrationFormFactory::class,
             'zfbuser_change_password_form'   => Form\Factory\ChangePasswordFormFactory::class,
             'zfbuser_new_user_form'          => Form\Factory\NewUserFormFactory::class,
+            'zfbuser_update_user_form'       => Form\Factory\UpdateUserFormFactory::class,
             'zfbuser_set_password_form'      => Form\Factory\SetPasswordFormFactory::class,
             'zfbuser_mail_sender_transport'  => Service\Factory\MailSenderTransportFactory::class,
         ],

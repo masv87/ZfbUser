@@ -131,4 +131,49 @@ class User implements UserInterface
     {
         return $this->identity;
     }
+
+    /**
+     * Exchange internal values from provided array
+     *
+     * @param  array $data
+     *
+     * @return void
+     */
+    public function exchangeArray(array $data)
+    {
+        $this->setIdentity((string)$data['identity']);
+
+        if (!empty($data['identityConfirmed'])) {
+            $this->setIdentityConfirmed((bool)$data['identityConfirmed']);
+        }
+
+        if (!empty($data['credential'])) {
+            $this->setCredential((string)$data['credential']);
+        }
+    }
+
+    /**
+     * Return an array representation of the object
+     *
+     * @return array
+     */
+    public function getArrayCopy()
+    {
+        $data = [
+            'id'                => $this->getId(),
+            'identity'          => $this->getIdentity(),
+            'credential'        => $this->getCredential(),
+            'identityConfirmed' => $this->isIdentityConfirmed(),
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->getArrayCopy();
+    }
 }

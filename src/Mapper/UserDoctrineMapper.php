@@ -33,6 +33,15 @@ class UserDoctrineMapper extends DoctrineMapper implements UserMapperInterface
 
     /**
      * @param \ZfbUser\Entity\UserInterface $user
+     */
+    public function delete(UserInterface $user)
+    {
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param \ZfbUser\Entity\UserInterface $user
      *
      * @return \ZfbUser\Entity\UserInterface
      */

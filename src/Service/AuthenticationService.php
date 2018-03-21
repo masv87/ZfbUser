@@ -54,7 +54,7 @@ class AuthenticationService extends \Zend\Authentication\AuthenticationService
 
             if (!empty($this->identity) && is_string($this->identity)) {
                 $this->identity = $this->getAdapter()->getRepository()->getUserByIdentity($this->identity);
-            } elseif ($reload === true) {
+            } elseif ($this->identity !== null && $reload === true) {
                 $this->identity = $this->getAdapter()->getRepository()->getUserByIdentity($this->identity->getIdentity());
             }
 

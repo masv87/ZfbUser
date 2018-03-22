@@ -109,6 +109,16 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     protected $enableIdentityConfirmation = false;
 
     /**
+     * @var bool
+     */
+    protected $enableRedirect = true;
+
+    /**
+     * @var string
+     */
+    protected $redirectParamName = 'redirectTo';
+
+    /**
      * @var string
      */
     protected $authenticationCallbackRoute = 'zfbuser';
@@ -582,6 +592,46 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     public function setEnableIdentityConfirmation(bool $enableIdentityConfirmation): ModuleOptions
     {
         $this->enableIdentityConfirmation = $enableIdentityConfirmation;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnableRedirect(): bool
+    {
+        return $this->enableRedirect;
+    }
+
+    /**
+     * @param bool $enableRedirect
+     *
+     * @return ModuleOptions
+     */
+    public function setEnableRedirect(bool $enableRedirect): ModuleOptions
+    {
+        $this->enableRedirect = $enableRedirect;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRedirectParamName(): string
+    {
+        return $this->redirectParamName;
+    }
+
+    /**
+     * @param string $redirectParamName
+     *
+     * @return ModuleOptions
+     */
+    public function setRedirectParamName(string $redirectParamName): ModuleOptions
+    {
+        $this->redirectParamName = $redirectParamName;
 
         return $this;
     }

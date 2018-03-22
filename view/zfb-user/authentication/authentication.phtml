@@ -26,7 +26,6 @@ if ($passwordChanged) {
 
 $form = $this->form;
 $form->prepare();
-$form->setAttribute('action', $this->url('zfbuser/authentication'));
 $form->setAttribute('method', 'POST');
 
 echo $this->form()->openTag($form);

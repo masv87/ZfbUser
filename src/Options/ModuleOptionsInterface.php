@@ -105,6 +105,16 @@ interface ModuleOptionsInterface extends OptionsInterface
     public function isEnableIdentityConfirmation(): bool;
 
     /**
+     * @return bool
+     */
+    public function isEnableRedirect(): bool;
+
+    /**
+     * @return string
+     */
+    public function getRedirectParamName(): string;
+
+    /**
      * @return string
      */
     public function getAuthenticationCallbackRoute(): string;

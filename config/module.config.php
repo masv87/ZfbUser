@@ -29,6 +29,9 @@ return [
             // required, Включить функцию подтверждения аккаунта
             'enable_identity_confirmation'    => true,
 
+            'enable_redirect'                 => true,
+            'redirect_param_name'             => 'redirectTo',
+
             // required, куда перенаправлять после акторизации
             'authentication_callback_route'   => 'zfbuser',
 

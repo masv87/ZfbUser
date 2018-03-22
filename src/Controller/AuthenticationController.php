@@ -74,11 +74,17 @@ class AuthenticationController extends AbstractActionController
         /** @var \Zend\Http\PhpEnvironment\Request $request */
         $request = $this->getRequest();
 
+        $redirectTo = null;
+        if ($this->moduleOptions->isEnableRedirect()) {
+            $redirectTo = $this->params()->fromQuery($this->moduleOptions->getRedirectParamName(), null);
+        }
+
         $viewModel = new ViewModel([
             'form'               => $this->authenticationForm,
             'enableRegistration' => $this->moduleOptions->isEnableRegistration(),
             'confirmed'          => false,
             'passwordChanged'    => false,
+            'redirectTo'         => $redirectTo,
         ]);
 
         if (!$request->isPost()) {
@@ -88,6 +94,9 @@ class AuthenticationController extends AbstractActionController
             $passwordChanged = (bool)$this->params()->fromQuery('passwordChanged', false);
             $identityFieldName = $this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName();
             $this->authenticationForm->get($identityFieldName)->setValue($identity);
+
+            $url = $request->getRequestUri();
+            $this->authenticationForm->setAttribute('action', $url);
 
             $viewModel->setVariable('confirmed', $confirmed);
             $viewModel->setVariable('passwordChanged', $passwordChanged);
@@ -121,9 +130,14 @@ class AuthenticationController extends AbstractActionController
             return $this->redirect()->toRoute('zfbuser', ['action' => 'authentication']);
         }
 
+        $redirectTo = null;
+        if ($this->moduleOptions->isEnableRedirect()) {
+            $redirectTo = $this->params()->fromQuery($this->moduleOptions->getRedirectParamName(), null);
+        }
+
         $this->authenticationAdapter
-            ->setIdentity($data[ $this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName() ])
-            ->setCredential($data[ $this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName() ]);
+            ->setIdentity($data[$this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName()])
+            ->setCredential($data[$this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName()]);
 
         /** @var AuthenticationResult $authResult */
         $authResult = $this->zfbAuthentication()->getAuthService()->authenticate($this->authenticationAdapter);
@@ -131,7 +145,8 @@ class AuthenticationController extends AbstractActionController
         if (!$authResult->isValid()) {
             if ($authResult->getCode() == AuthenticationResult::FAILURE_IDENTITY_NOT_CONFIRMED) {
                 $query = http_build_query([
-                    'identity' => $authResult->getIdentity()->getIdentity(),
+                    'identity'   => $authResult->getIdentity()->getIdentity(),
+                    'redirectTo' => $redirectTo,
                 ]);
 
                 return $this->redirect()->toRoute('zfbuser/confirmation', ['action' => 'index'],
@@ -144,10 +159,15 @@ class AuthenticationController extends AbstractActionController
                 'confirmed'          => false,
                 'passwordChanged'    => false,
                 'authResult'         => $authResult,
+                'redirectTo'         => $redirectTo,
             ]);
             $viewModel->setTemplate('zfb-user/authentication/authentication');
 
             return $viewModel;
+        }
+
+        if (!empty($redirectTo)) {
+            return $this->redirect()->toUrl($redirectTo);
         }
 
         return $this->redirect()->toRoute($this->moduleOptions->getAuthenticationCallbackRoute());

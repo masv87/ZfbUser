@@ -46,15 +46,16 @@ class AuthenticationController extends AbstractActionController
     /**
      * AuthenticationController constructor.
      *
-     * @param \ZfbUser\Form\AuthenticationForm        $authenticationForm
-     * @param \ZfbUser\Adapter\AdapterInterface       $authenticationAdapter
+     * @param \ZfbUser\Form\AuthenticationForm $authenticationForm
+     * @param \ZfbUser\Adapter\AdapterInterface $authenticationAdapter
      * @param \ZfbUser\Options\ModuleOptionsInterface $moduleOptions
      */
     public function __construct(
         AuthenticationForm $authenticationForm,
         AdapterInterface $authenticationAdapter,
         ModuleOptionsInterface $moduleOptions
-    ) {
+    )
+    {
         $this->authenticationForm = $authenticationForm;
         $this->authenticationAdapter = $authenticationAdapter;
         $this->moduleOptions = $moduleOptions;
@@ -80,11 +81,11 @@ class AuthenticationController extends AbstractActionController
         }
 
         $viewModel = new ViewModel([
-            'form'               => $this->authenticationForm,
+            'form' => $this->authenticationForm,
             'enableRegistration' => $this->moduleOptions->isEnableRegistration(),
-            'confirmed'          => false,
-            'passwordChanged'    => false,
-            'redirectTo'         => $redirectTo,
+            'confirmed' => false,
+            'passwordChanged' => false,
+            'redirectTo' => $redirectTo,
         ]);
 
         if (!$request->isPost()) {
@@ -145,7 +146,7 @@ class AuthenticationController extends AbstractActionController
         if (!$authResult->isValid()) {
             if ($authResult->getCode() == AuthenticationResult::FAILURE_IDENTITY_NOT_CONFIRMED) {
                 $query = http_build_query([
-                    'identity'   => $authResult->getIdentity()->getIdentity(),
+                    'identity' => $authResult->getIdentity()->getIdentity(),
                     'redirectTo' => $redirectTo,
                 ]);
 
@@ -154,12 +155,12 @@ class AuthenticationController extends AbstractActionController
             }
 
             $viewModel = new ViewModel([
-                'form'               => $this->authenticationForm,
+                'form' => $this->authenticationForm,
                 'enableRegistration' => $this->moduleOptions->isEnableRegistration(),
-                'confirmed'          => false,
-                'passwordChanged'    => false,
-                'authResult'         => $authResult,
-                'redirectTo'         => $redirectTo,
+                'confirmed' => false,
+                'passwordChanged' => false,
+                'authResult' => $authResult,
+                'redirectTo' => $redirectTo,
             ]);
             $viewModel->setTemplate('zfb-user/authentication/authentication');
 
@@ -204,7 +205,7 @@ class AuthenticationController extends AbstractActionController
             foreach ($this->authenticationForm->getElements() as $element) {
                 $messages = $this->authenticationForm->getMessages($element->getName());
                 if (!empty($messages)) {
-                    $formErrors[ $element->getName() ] = $messages;
+                    $formErrors[$element->getName()] = $messages;
                 }
             }
 
@@ -217,8 +218,8 @@ class AuthenticationController extends AbstractActionController
 
         $data = $this->authenticationForm->getData();
         $this->authenticationAdapter
-            ->setIdentity($data[ $this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName() ])
-            ->setCredential($data[ $this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName() ]);
+            ->setIdentity($data[$this->moduleOptions->getAuthenticationFormOptions()->getIdentityFieldName()])
+            ->setCredential($data[$this->moduleOptions->getAuthenticationFormOptions()->getCredentialFieldName()]);
 
         /** @var AuthenticationResult $authResult */
         $authResult = $this->zfbAuthentication()->getAuthService()->authenticate($this->authenticationAdapter);
@@ -245,6 +246,7 @@ class AuthenticationController extends AbstractActionController
         $url = $this->url()->fromRoute($this->moduleOptions->getAuthenticationCallbackRoute());
 
         $jsonModel->setVariable('success', true);
+        $jsonModel->setVariable('user', $authResult->getIdentity());
         $jsonModel->setVariable('authentication_callback_url', $url);
 
         return $jsonModel;

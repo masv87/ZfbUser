@@ -4,6 +4,7 @@ namespace ZfbUser\Controller;
 
 use Zend\Http\PhpEnvironment\Request;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Json\Json;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
@@ -179,13 +180,17 @@ class AuthenticationController extends AbstractActionController
      */
     public function apiAuthenticationAction()
     {
-        sleep(2);
-
         /** @var Response $response */
         $response = $this->getResponse();
 
         /** @var Request $request */
         $request = $this->getRequest();
+
+        if ($request->isOptions()) {
+            $response->setStatusCode(Response::STATUS_CODE_200);
+
+            return $response;
+        }
 
         if (!$request->isPost()) {
             $response->setStatusCode(Response::STATUS_CODE_405);
@@ -197,7 +202,10 @@ class AuthenticationController extends AbstractActionController
             'success' => false,
         ]);
 
-        $this->authenticationForm->setData($request->getPost());
+        $this->authenticationForm->remove('csrf');
+        $data = Json::decode($request->getContent(), true);
+
+        $this->authenticationForm->setData($data);
         if (!$this->authenticationForm->isValid()) {
             $formErrors = [];
 

@@ -50,13 +50,17 @@ class LogoutController extends AbstractActionController
      */
     public function apiLogoutAction()
     {
-        sleep(2);
-
         /** @var Response $response */
         $response = $this->getResponse();
 
         /** @var Request $request */
         $request = $this->getRequest();
+
+        if ($request->isOptions()) {
+            $response->setStatusCode(Response::STATUS_CODE_200);
+
+            return $response;
+        }
 
         if (!$request->isPost()) {
             $response->setStatusCode(Response::STATUS_CODE_405);
@@ -67,7 +71,7 @@ class LogoutController extends AbstractActionController
         $this->zfbAuthentication()->getAuthService()->clearIdentity();
 
         $jsonModel = new JsonModel([
-            'success'             => true,
+            'success' => true,
             'logout_callback_url' => $this->url()->fromRoute($this->moduleOptions->getLogoutCallbackRoute()),
         ]);
 

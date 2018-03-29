@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Token implements TokenInterface
 {
     /**
-     * Идентификатор пользователя
+     * Идентификатор токена
      *
      * @var int
      *

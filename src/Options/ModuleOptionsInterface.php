@@ -80,6 +80,16 @@ interface ModuleOptionsInterface extends OptionsInterface
     public function getTokenEntityClass(): string;
 
     /**
+     * @return string
+     */
+    public function getLogEntityClass(): string;
+
+    /**
+     * @return boolean
+     */
+    public function isEnableLogging(): bool;
+
+    /**
      * @return boolean
      */
     public function isEnableRegistration(): bool;

@@ -9,7 +9,7 @@ use ZfbUser\Entity\UserInterface;
 use ZfbUser\Options\ModuleOptionsInterface;
 
 /**
- * Class UserRepository
+ * Class TokenRepository
  *
  * @package ZfbUser\Repository
  */

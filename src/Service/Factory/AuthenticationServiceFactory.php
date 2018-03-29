@@ -24,7 +24,9 @@ class AuthenticationServiceFactory implements FactoryInterface
      * @param string                                $requestedName
      * @param array|null                            $options
      *
-     * @return \ZfbUser\Service\AuthenticationService
+     * @return object|\ZfbUser\Service\AuthenticationService
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
@@ -46,7 +48,6 @@ class AuthenticationServiceFactory implements FactoryInterface
         $storage = new SessionStorage('zfb_user', 'storage', $manager);
         $manager->rememberMe($moduleOptions->getStorageTtl());
 
-
-        return new AuthenticationService($storage, $authAdapter);
+        return new AuthenticationService($storage, $authAdapter, $moduleOptions);
     }
 }

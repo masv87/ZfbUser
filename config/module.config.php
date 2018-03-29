@@ -2,7 +2,6 @@
 
 namespace ZfbUser;
 
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Zend\Authentication\AuthenticationService;
 use Zend\I18n\View\Helper\Translate;
 use Zend\Router\Http\Literal;
@@ -12,22 +11,28 @@ return [
     Module::CONFIG_KEY => [
         'module_options'        => [
             //required, используется при формировании ссылки для подтверждения аккаунта
-            'base_url'                        => 'http://ads.dev/',
+            'base_url'                     => 'http://ads.dev/',
 
             // required, see \ZfbUser\Entity\UserInterface
-            'user_entity_class'               => Entity\User::class,
+            'user_entity_class'            => Entity\User::class,
 
             // required, see \ZfbUser\Entity\TokenInterface
-            'token_entity_class'              => Entity\Token::class,
+            'token_entity_class'           => Entity\Token::class,
 
-            // required, Включить функцию регистрации?
-            'enable_registration'             => true,
+            // required if logging enabled, see \ZfbUser\Entity\LogInterface
+            'log_entity_class'             => Entity\Log::class,
 
             // required
-            'password_cost'                   => 14,
+            'enable_logging'               => true,
+
+            // required, Включить функцию регистрации?
+            'enable_registration'          => true,
+
+            // required
+            'password_cost'                => 14,
 
             // required, Включить функцию подтверждения аккаунта
-            'enable_identity_confirmation'    => true,
+            'enable_identity_confirmation' => true,
 
             'enable_redirect'                 => true,
             'redirect_param_name'             => 'redirectTo',
@@ -121,7 +126,7 @@ return [
             // required, включить капчу?
             'enabled_recaptcha'    => false,
         ],
-        'update_user_form'         => [
+        'update_user_form'      => [
             'form_name'            => 'updateUserForm',
             'identity_field_label' => 'E-mail',
             'identity_field_name'  => 'identity',
@@ -174,7 +179,7 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes'  => [
-                    'api' => [
+                    'api'              => [
                         'type'          => Literal::class,
                         'priority'      => 1000,
                         'options'       => [
@@ -186,7 +191,7 @@ return [
                         ],
                         'may_terminate' => true,
                         'child_routes'  => [
-                            'get'   => [
+                            'get'            => [
                                 'type'    => Segment::class,
                                 'options' => [
                                     'route'    => '/get/:id',
@@ -196,7 +201,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'delete'   => [
+                            'delete'         => [
                                 'type'    => Segment::class,
                                 'options' => [
                                     'route'    => '/delete/:id',
@@ -206,7 +211,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'authentication'   => [
+                            'authentication' => [
                                 'type'    => Literal::class,
                                 'options' => [
                                     'route'    => '/authentication',
@@ -216,7 +221,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'logout'           => [
+                            'logout'         => [
                                 'type'    => Literal::class,
                                 'options' => [
                                     'route'    => '/logout',
@@ -226,7 +231,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'new-user'         => [
+                            'new-user'       => [
                                 'type'    => Segment::class,
                                 'options' => [
                                     'route'    => '/new-user',
@@ -236,7 +241,7 @@ return [
                                     ],
                                 ],
                             ],
-                            'update-user'         => [
+                            'update-user'    => [
                                 'type'    => Segment::class,
                                 'options' => [
                                     'route'    => '/update-user/:id',
@@ -246,7 +251,7 @@ return [
                                     ],
                                 ],
                             ],
-                        ]
+                        ],
                     ],
                     'authentication'   => [
                         'type'    => Literal::class,
@@ -328,7 +333,7 @@ return [
                             ],
                         ],
                     ],
-                    'update-user'         => [
+                    'update-user'      => [
                         'type'    => Segment::class,
                         'options' => [
                             'route'    => '/update-user/:id',
@@ -338,7 +343,7 @@ return [
                             ],
                         ],
                     ],
-                    'set-password'         => [
+                    'set-password'     => [
                         'type'    => Segment::class,
                         'options' => [
                             'route'    => '/set-password[/:action]',
@@ -356,9 +361,9 @@ return [
         'template_path_stack' => [
             __DIR__ . '/../view',
         ],
-        'strategies' => array(
+        'strategies'          => [
             'ViewJsonStrategy',
-        ),
+        ],
     ],
     'controllers'        => [
         'factories' => [
@@ -385,27 +390,32 @@ return [
     ],
     'service_manager'    => [
         'factories' => [
-            AuthenticationService::class     => Service\Factory\AuthenticationServiceFactory::class,
-            Options\ModuleOptions::class     => Options\Factory\ModuleOptionsFactory::class,
-            Service\MailSender::class        => Service\Factory\MailSenderFactory::class,
-            Service\UserService::class       => Service\Factory\UserServiceFactory::class,
-            Service\TokenService::class      => Service\Factory\TokenServiceFactory::class,
+            AuthenticationService::class => Service\Factory\AuthenticationServiceFactory::class,
+            Options\ModuleOptions::class => Options\Factory\ModuleOptionsFactory::class,
+            Service\MailSender::class    => Service\Factory\MailSenderFactory::class,
+            Service\UserService::class   => Service\Factory\UserServiceFactory::class,
+            Service\TokenService::class  => Service\Factory\TokenServiceFactory::class,
+            Service\LogService::class    => Service\Factory\LogServiceFactory::class,
+
+            EventListener\AuthenticationServiceListener::class => EventListener\Factory\AuthenticationServiceListenerFactory::class,
 
             //changeable services
-            'zfbuser_authentication_adapter' => Adapter\Factory\DbAdapterFactory::class,
-            'zfbuser_user_mapper'            => Mapper\Factory\UserDoctrineMapperFactory::class,
-            'zfbuser_user_repository'        => Repository\Factory\UserRepositoryFactory::class,
-            'zfbuser_token_mapper'           => Mapper\Factory\TokenDoctrineMapperFactory::class,
-            'zfbuser_token_repository'       => Repository\Factory\TokenRepositoryFactory::class,
-            'zfbuser_recover_password_form'  => Form\Factory\RecoverPasswordFormFactory::class,
-            'zfbuser_reset_password_form'    => Form\Factory\ResetPasswordFormFactory::class,
-            'zfbuser_authentication_form'    => Form\Factory\AuthenticationFormFactory::class,
-            'zfbuser_registration_form'      => Form\Factory\RegistrationFormFactory::class,
-            'zfbuser_change_password_form'   => Form\Factory\ChangePasswordFormFactory::class,
-            'zfbuser_new_user_form'          => Form\Factory\NewUserFormFactory::class,
-            'zfbuser_update_user_form'       => Form\Factory\UpdateUserFormFactory::class,
-            'zfbuser_set_password_form'      => Form\Factory\SetPasswordFormFactory::class,
-            'zfbuser_mail_sender_transport'  => Service\Factory\MailSenderTransportFactory::class,
+            'zfbuser_authentication_adapter'                   => Adapter\Factory\DbAdapterFactory::class,
+            'zfbuser_user_mapper'                              => Mapper\Factory\UserDoctrineMapperFactory::class,
+            'zfbuser_user_repository'                          => Repository\Factory\UserRepositoryFactory::class,
+            'zfbuser_token_mapper'                             => Mapper\Factory\TokenDoctrineMapperFactory::class,
+            'zfbuser_token_repository'                         => Repository\Factory\TokenRepositoryFactory::class,
+            'zfbuser_log_mapper'                               => Mapper\Factory\LogDoctrineMapperFactory::class,
+            'zfbuser_log_repository'                           => Repository\Factory\LogRepositoryFactory::class,
+            'zfbuser_recover_password_form'                    => Form\Factory\RecoverPasswordFormFactory::class,
+            'zfbuser_reset_password_form'                      => Form\Factory\ResetPasswordFormFactory::class,
+            'zfbuser_authentication_form'                      => Form\Factory\AuthenticationFormFactory::class,
+            'zfbuser_registration_form'                        => Form\Factory\RegistrationFormFactory::class,
+            'zfbuser_change_password_form'                     => Form\Factory\ChangePasswordFormFactory::class,
+            'zfbuser_new_user_form'                            => Form\Factory\NewUserFormFactory::class,
+            'zfbuser_update_user_form'                         => Form\Factory\UpdateUserFormFactory::class,
+            'zfbuser_set_password_form'                        => Form\Factory\SetPasswordFormFactory::class,
+            'zfbuser_mail_sender_transport'                    => Service\Factory\MailSenderTransportFactory::class,
         ],
     ],
     'view_helpers'       => [

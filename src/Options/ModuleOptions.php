@@ -5,6 +5,7 @@ namespace ZfbUser\Options;
 use Zend\Stdlib\AbstractOptions;
 use ZfbUser\Entity\User as UserEntity;
 use ZfbUser\Entity\Token as TokenEntity;
+use ZfbUser\Entity\Log as LogEntity;
 
 /**
  * Class ModuleOptions
@@ -82,6 +83,16 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
      * @var string
      */
     protected $tokenEntityClass = TokenEntity::class;
+
+    /**
+     * @var string
+     */
+    protected $logEntityClass = LogEntity::class;
+
+    /**
+     * @var bool
+     */
+    protected $enableLogging = true;
 
     /**
      * @var bool
@@ -492,6 +503,46 @@ class ModuleOptions extends AbstractOptions implements ModuleOptionsInterface
     public function setTokenEntityClass(string $tokenEntityClass): ModuleOptions
     {
         $this->tokenEntityClass = $tokenEntityClass;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogEntityClass(): string
+    {
+        return $this->logEntityClass;
+    }
+
+    /**
+     * @param string $logEntityClass
+     *
+     * @return ModuleOptions
+     */
+    public function setLogEntityClass(string $logEntityClass): ModuleOptions
+    {
+        $this->logEntityClass = $logEntityClass;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnableLogging(): bool
+    {
+        return $this->enableLogging;
+    }
+
+    /**
+     * @param bool $enableLogging
+     *
+     * @return ModuleOptions
+     */
+    public function setEnableLogging(bool $enableLogging): ModuleOptions
+    {
+        $this->enableLogging = $enableLogging;
 
         return $this;
     }

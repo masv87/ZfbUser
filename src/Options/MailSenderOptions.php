@@ -27,6 +27,11 @@ class MailSenderOptions extends AbstractOptions implements MailSenderOptionsInte
     protected $templatePath;
 
     /**
+     * @var string
+     */
+    protected $transportFactory = 'zfbuser_mail_sender_file_transport';
+
+    /**
      * @return string
      */
     public function getFromEmail(): string
@@ -82,6 +87,26 @@ class MailSenderOptions extends AbstractOptions implements MailSenderOptionsInte
     public function setTemplatePath(string $templatePath): MailSenderOptions
     {
         $this->templatePath = $templatePath;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransportFactory(): string
+    {
+        return $this->transportFactory;
+    }
+
+    /**
+     * @param string $transportFactory
+     *
+     * @return MailSenderOptions
+     */
+    public function setTransportFactory(string $transportFactory): MailSenderOptions
+    {
+        $this->transportFactory = $transportFactory;
 
         return $this;
     }

@@ -23,4 +23,9 @@ interface MailSenderOptionsInterface extends OptionsInterface
      * @return string
      */
     public function getTemplatePath(): string;
+
+    /**
+     * @return string
+     */
+    public function getTransportFactory(): string;
 }

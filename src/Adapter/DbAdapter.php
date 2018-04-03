@@ -42,8 +42,6 @@ class DbAdapter extends AbstractAdapter
      */
     public function authenticate(): AuthenticationResult
     {
-        $code = AuthenticationResult::SUCCESS;
-
         /** @var UserInterface $user */
         $user = $this->getRepository()->getUserByIdentity($this->getIdentity());
         if (is_null($user)) {
@@ -54,10 +52,12 @@ class DbAdapter extends AbstractAdapter
             } else {
                 if (!$this->verifyCredential($this->getCredential(), $user->getCredential())) {
                     $code = AuthenticationResult::FAILURE_CREDENTIAL_INVALID;
-                }
+                } else {
+                    $code = AuthenticationResult::SUCCESS;
 
-                // Update user password hash if the cost parameter has changed
-                $this->updateUserPasswordHash($user, $this->getCredential());
+                    // Update user password hash if the cost parameter has changed
+                    $this->updateUserPasswordHash($user, $this->getCredential());
+                }
             }
         }
 

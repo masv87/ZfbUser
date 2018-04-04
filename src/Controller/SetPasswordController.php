@@ -55,11 +55,12 @@ class SetPasswordController extends AbstractActionController
 
     /**
      * @return \Zend\Http\Response|\Zend\View\Model\ViewModel
+     * @throws \ZfbUser\Service\Exception\EventResultException
      */
     public function indexAction()
     {
         if ($this->zfbAuthentication()->hasIdentity()) {
-            return $this->redirect()->toRoute('zfbuser/authentication');
+            $this->zfbAuthentication()->getAuthService()->clearIdentity();
         }
 
         /** @var \Zend\Http\PhpEnvironment\Request $request */

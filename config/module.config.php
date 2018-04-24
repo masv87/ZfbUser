@@ -154,7 +154,7 @@ return [
             'from_email'        => 'noreply@example.com',
             'from_name'         => 'Site name',
             'template_path'     => __DIR__ . '/../templates/',
-            'transport_factory' => 'zfbuser_mail_sender_file_transport',
+            'transport_factory' => 'zfbuser_mail_sender_file_transport', // or "zfbuser_mail_sender_smtp_transport"
         ],
         // required if enabled, see https://developers.google.com/recaptcha/docs/display
         'recaptcha'             => [
@@ -418,6 +418,7 @@ return [
             'zfbuser_set_password_form'                        => Form\Factory\SetPasswordFormFactory::class,
             'zfbuser_mail_sender_transport'                    => Service\Factory\MailSenderTransportFactory::class,
             'zfbuser_mail_sender_file_transport'               => Service\Factory\MailSenderFileTransportFactory::class,
+            'zfbuser_mail_sender_smtp_transport'               => Service\Factory\MailSenderSmtpTransportFactory::class,
         ],
     ],
     'view_helpers'       => [

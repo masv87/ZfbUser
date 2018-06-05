@@ -24,7 +24,7 @@ class User implements UserInterface
      * E-mail - Идентификатор
      *
      * @var string
-     * @ORM\Column(name="identity", type="string", unique=true, length=50, nullable=false)
+     * @ORM\Column(name="identity", type="string", unique=true, length=100, nullable=false)
      */
     protected $identity;
 

@@ -46,9 +46,20 @@ class MailSender implements MailSenderInterface
      */
     public function send(UserInterface $user, string $template, array $data): void
     {
+        $this->sendTo($user->getIdentity(), $user->getDisplayName(), $template, $data);
+    }
+
+    /**
+     * @param string $email
+     * @param string $displayName
+     * @param string $template
+     * @param array $data
+     */
+    public function sendTo(string $email, string $displayName, string $template, array $data): void
+    {
         $mail = new Message();
         $mail->setFrom($this->options->getFromEmail(), $this->options->getFromName());
-        $mail->addTo($user->getIdentity(), $user->getDisplayName());
+        $mail->addTo($email, $displayName);
         $mail->setSubject($this->getSubject($template));
         $mail->setEncoding('UTF-8');
 

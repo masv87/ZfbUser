@@ -60,13 +60,14 @@ class MailSender implements MailSenderInterface
         $mail = new Message();
         $mail->setFrom($this->options->getFromEmail(), $this->options->getFromName());
         $mail->addTo($email, $displayName);
-        $mail->setSubject($this->getSubject($template));
+        $subject = $this->getSubject($template);
         $mail->setEncoding('UTF-8');
 
         foreach ($data as $k => $v) {
             $template = str_replace('%' . $k . '%', $v, $template);
+            $subject = str_replace('%' . $k . '%', $v, $subject);
         }
-
+        $mail->setSubject($subject);
         $html = new MimePart($template);
         $html->type = Mime::TYPE_HTML;
         $html->charset = 'utf-8';
